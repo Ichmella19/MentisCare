@@ -1,0 +1,162 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id     String @id @default(uuid())
+  name   String
+  email  String
+  status String @default("actif")
+
+  role          String     @default("admin")
+  phone         String     @default("+33157512306")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  emailVerified Boolean
+  image         String?
+  Blog          Blog[]
+  Calendar      Calendar[]
+  Suivi         Suivi[]
+  account       account[]
+  session       session[]
+}
+
+model Patient {
+  id            Int     @id @default(autoincrement())
+  adresse       String
+  sexe          String
+  pays          String
+  dateNaissance String
+  userId        String
+  Suivi         Suivi[]
+}
+
+model Suivi {
+  id           Int      @id @default(autoincrement())
+  description  String
+  prescription String
+  fichier      String
+  patentId     Int
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  patient      Patient  @relation(fields: [patentId], references: [id])
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model Blog {
+  id      Int       @id @default(autoincrement())
+  date    DateTime
+  image   String
+  status  String
+  userId  String
+  blogId  Int
+  user    User      @relation(fields: [userId], references: [id])
+  comment Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  name      String
+  status    String
+  note      Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  blogId    Int
+  blog      Blog     @relation(fields: [blogId], references: [id])
+}
+
+model Calendar {
+  id           Int           @id @default(autoincrement())
+  categoryId   Int
+  userId       String
+  date         DateTime
+  heureDebut   String
+  heureFin     String
+  quantity     Int
+  stock        Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  category     Category      @relation(fields: [categoryId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
+  reservations Reservation[]
+}
+
+model Category {
+  id             Int        @id @default(autoincrement())
+  name           String
+  identifiantUrl String
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  calendars      Calendar[]
+}
+
+model Reservation {
+  id          Int      @id @default(autoincrement())
+  calendarId  Int
+  nom         String
+  email       String
+  phone       String
+  description String
+  adresse     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  calendar    Calendar @relation(fields: [calendarId], references: [id])
+}
+
+model Don {
+  id                     Int      @id @default(autoincrement())
+  nom                    String
+  email                  String
+  phone                  String
+  montant                Float
+  modePaiement           String
+  identifiantTransaction String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime? @db.Timestamp(6)
+  refreshTokenExpiresAt DateTime? @db.Timestamp(6)
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @db.Timestamp(6)
+  updatedAt             DateTime  @db.Timestamp(6)
+  User                  User      @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model session {
+  id        String   @id
+  expiresAt DateTime @db.Timestamp(6)
+  token     String   @unique
+  createdAt DateTime @db.Timestamp(6)
+  updatedAt DateTime @db.Timestamp(6)
+  ipAddress String?
+  userAgent String?
+  userId    String
+  User      User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime  @db.Timestamp(6)
+  createdAt  DateTime? @db.Timestamp(6)
+  updatedAt  DateTime? @db.Timestamp(6)
+}
