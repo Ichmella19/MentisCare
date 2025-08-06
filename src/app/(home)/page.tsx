@@ -16,6 +16,7 @@ import { MapPin } from 'lucide-react';
 
 
 export default function Home() {
+    
   const router = useRouter();
     const ref = useRef(null);
   const isInView = useInView(ref, { once: true });

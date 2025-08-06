@@ -302,7 +302,7 @@ const AppSidebar: React.FC = () => {
         lg:translate-x-0`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-    >
+    style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <div
         className={`py-8 flex  ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"

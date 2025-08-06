@@ -4,10 +4,11 @@ import React, { useState } from "react";
 import { useRouter, usePathname } from 'next/navigation';
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
-
+import { useSession } from "next-auth/react"
 
 
 const Header: React.FC = () => {
+   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -28,17 +29,25 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`w-full fixed top-0 left-0 z-50 py-4 bg-white dark:bg-black shadow-md dark:text-white `}
-      style={{ fontFamily: "Montserrat, sans-serif" }}
+      className={` w-full fixed top-0 left-0 z-50 py-4 bg-white dark:bg-black shadow-md dark:text-white font-montserrat`}
+   
     >
       <div className="max-w-screen-2xl mx-auto flex items-center justify-between px-4 sm:px-6 md:px-8 lg:px-16">
         {/* Logo */}
         <Link href="/">
-          <img
-            src="/images/logo.png"
-            alt="Logo"
-            className="w-24 sm:w-28 md:w-32 lg:w-36 object-contain cursor-pointer"
-          />
+          {/* Logo clair : visible uniquement en mode light */}
+  <img
+    src="assets/images/Light1.png"
+    alt="Logo clair"
+    className="w-28 md:w-32 lg:w-36 object-contain cursor-pointer block dark:hidden"
+  />
+  
+  {/* Logo sombre : visible uniquement en mode dark */}
+  <img
+    src="/assets/images/Dark1.png"
+    alt="Logo sombre"
+    className="w-28 md:w-32 lg:w-36 object-contain cursor-pointer hidden dark:block"
+  />
         </Link>
 
         {/* Desktop Navigation */}
@@ -72,9 +81,9 @@ const Header: React.FC = () => {
           <div className="flex rounded-lg overflow-hidden shadow border border-[#08A3DC]">
             <button
               className="bg-[#08A3DC] text-white px-6 py-2 hover:bg-[#0b91c6] transition duration-200"
-              onClick={() => router.push("/signin")}
+              onClick={() => router.push(session?.user?"/admin/dashboard":"/signin")}
             >
-              Se Connecter
+             {session?.user?"Dashboard" : "Se connecter"}
             </button>
             <button
               className="bg-[#003A44] text-white px-6 py-2 transition duration-200"

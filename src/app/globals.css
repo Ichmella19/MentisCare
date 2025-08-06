@@ -738,3 +738,19 @@ span.flatpickr-weekday,
   opacity: 0.8;
   cursor: grabbing; /* Changes the cursor to indicate dragging */
 }
+@font-face {
+  font-family: 'Ibrand';
+  src: url('/src/assets/fonts/Ibrand.woff2') format('woff2'),
+       url('/src/assets/fonts/Ibrand.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 1.5px;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/src/assets/fonts/Montserrat.woff2') format('woff2'),
+       url('/src/assets/fonts/Montserrat.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  letter-spacing: 1.5px;
+}
