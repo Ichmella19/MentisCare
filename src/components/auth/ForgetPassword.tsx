@@ -6,6 +6,7 @@ import * as Yup from "yup";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Link from "next/link";
+import { sendOtp } from "@/app/(full-width-pages)/(auth)/action";
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Email invalide").required("Ce champ est requis"),
@@ -25,9 +26,15 @@ export default function ForgetPasswordPage() {
     setSubmitting(true);
 
 
-    setTimeout(() => {
-      toast.success("Un code de vérification a été envoyé par email !");
-      router.push("/otp"); 
+    setTimeout(async () => {
+      const response = await sendOtp(values.email);
+      if(response.success) {
+        toast.success("Un code de vérification a été envoyé par email !");
+      router.push(`/otp?email=${encodeURIComponent(values.email)}`);
+
+      } else {
+        toast.error(response.error || "Une erreur s'est produite lors de l'envoi du code.");
+      }
       setSubmitting(false);
     }, 1500);
   };

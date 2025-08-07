@@ -71,7 +71,8 @@ model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
+  createdAt DateTime @default(now()) 
   @@id([identifier, token])
 }
  
