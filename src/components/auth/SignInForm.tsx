@@ -146,7 +146,7 @@ const onSubmit = async (
                 className="w-full py-2 bg-[#08A3DC] text-white rounded hover:bg-[#0b91c6] transition duration-200"
               >
                 {isSubmitting ? "Connexion..." : "Se connecter"}
-              </button>
+              </button>  
             </Form>
           )}
         </Formik>
