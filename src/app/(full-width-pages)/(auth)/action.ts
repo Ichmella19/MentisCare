@@ -2,7 +2,6 @@
 import prisma from "@/lib/db";
 import sgMail from "@sendgrid/mail";
 import bcrypt from "bcryptjs";
-
 function otpCodeGenerator() {
   return Math.floor(1000 + Math.random() * 9000).toString();  
 }
@@ -103,3 +102,4 @@ export async function update(email: string, password: string) {
     return { success: true, message: "Mot de passe mis à jour avec succès" };
    
 }
+

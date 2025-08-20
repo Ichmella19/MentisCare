@@ -2,6 +2,8 @@ import PlusIcon from "./plus.svg";
 import CloseIcon from "./close.svg";
 import BoxIcon from "./box.svg";
 import CheckCircleIcon from "./check-circle.svg";
+import WalletIcon from "./wallet.svg";
+import PersonIcon from "./person.svg";
 import AlertIcon from "./alert.svg";
 import InfoIcon from "./info.svg";
 import ErrorIcon from "./info-hexa.svg";
@@ -51,10 +53,12 @@ import HorizontaLDots from "./horizontal-dots.svg";
 import ChatIcon from "./chat.svg";
 import MoreDotIcon from "./more-dot.svg";
 import BellIcon from "./bell.svg";
+import HospitalIcon from "./hospital.svg";
 
 export {
   DownloadIcon,
   BellIcon,
+  HospitalIcon,
   MoreDotIcon,
   FileIcon,
   GridIcon,
@@ -106,4 +110,7 @@ export {
   HorizontaLDots,
   ChevronUpIcon,
   ChatIcon,
+  WalletIcon,
+  PersonIcon,
+ 
 };

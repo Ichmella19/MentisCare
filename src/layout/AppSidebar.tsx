@@ -6,17 +6,19 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   // BoxCubeIcon,
-  CalenderIcon,
-  ChevronDownIcon,
+ 
+
+  // ChevronDownIcon,
+  BellIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
-  PageIcon,
-  // PieChartIcon,
-  // PlugInIcon,
+  WalletIcon,
+  PersonIcon,
+  HospitalIcon,
   TableIcon,
   UserCircleIcon,
 } from "../icons/index";
+
 
 
 type NavItem = {
@@ -29,38 +31,38 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+    name: "Tableau de bord",
+      path: "/admin/dashboard",
   },
   {
-    icon: <CalenderIcon />,
+    icon: <UserCircleIcon/>,
     name: "Gestion des utilisateurs",
-    path: "/calendar",
+    path: "/admin/users",
   },
    {
-    icon: <CalenderIcon />,
+    icon: <PersonIcon />,
     name: "Gestion des patients",
-    path: "/calendar",
+    path: "/gestion-patients",
   },
   {
-    icon: <UserCircleIcon />,
+    icon: <HospitalIcon />,
     name: "Gestions des consultations",
-    path: "/profile",
+    path: "/gestion-consultations",
   },
   {
     name: "Reservations",
     icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+   path: "/reservations",
   },
     {
     name: "Notifications",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    icon: <BellIcon />,
+ path: "/notifications",
   },
    {
     name: "Portfeuille",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    icon: <WalletIcon />,
+   path: "/portfeuille",
   },
 ];
 
@@ -131,16 +133,7 @@ const AppSidebar: React.FC = () => {
               {(isExpanded || isHovered || isMobileOpen) && (
                 <span className={`menu-item-text`}>{nav.name}</span>
               )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 text-[#0b91c6]  ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-[#0b91c6]"
-                      : ""
-                  }`}
-                />
-              )}
+             
             </button>
           ) : (
             nav.path && (
@@ -178,7 +171,7 @@ const AppSidebar: React.FC = () => {
                     : "0px",
               }}
             >
-              <ul className="mt-2 space-y-1 ml-9">
+              <ul className="mt-[20px] space-y-1 ml-9">
                 {nav.subItems.map((subItem) => (
                   <li key={subItem.name}>
                     <Link
@@ -330,14 +323,14 @@ const AppSidebar: React.FC = () => {
           <div className="flex flex-col gap-4">
             <div>
               <h2
-                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
+                className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 hover:text-[#08A3DC] cursor-pointer ${ 
                   !isExpanded && !isHovered
                     ? "lg:justify-center"
                     : "justify-start"
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
+                  "ADMIN DASHBOARD"
                 ) : (
                   <HorizontaLDots />
                 )}
