@@ -8,7 +8,7 @@ interface User {
   id: number;
   name: string;
   email: string;
-  status: "Actif" | "Suspendu";
+  status: "Actif" | "Non actif";
   createdAt: string;
   avatar: string;
 }
@@ -106,7 +106,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length > 0 ? (
+              {filteredUsers.length > 0 ? (  
                 filteredUsers.map((user) => (
                   <tr
                     key={user.id}
@@ -198,7 +198,8 @@ export default function UsersPage() {
         </div>
       </div>
       {isModalOpen && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center p-4 z-50">
+        <div className="fixed flex justify-center items-center p-4 z-50 ">
+            <div className="fixed inset-0 bg-black/40 backdrop-blur-sm bg-opacity-50 flex justify-center items-center p-4 z-50">
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold">Ajouter un Utilisateur</h2>
@@ -218,7 +219,7 @@ export default function UsersPage() {
         }}
       >
         {({ errors, touched }) => (
-          <Form className="space-y-4">
+          <Form className="space-y-4 ">
             {/* Nom */}
             <div>
               <label className="block mb-1">Nom complet *</label>
@@ -267,6 +268,8 @@ export default function UsersPage() {
       </Formik>
     </div>
   </div>
+        </div>
+  
 )}
 
     </div>
