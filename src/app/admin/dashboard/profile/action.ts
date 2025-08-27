@@ -2,6 +2,7 @@
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { auth } from "@/auth"
+
 export async function updateProfile(
   currentEmail: string, 
   newData: { name?: string; email?: string }

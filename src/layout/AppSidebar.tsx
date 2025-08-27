@@ -47,12 +47,12 @@ const navItems: NavItem[] = [
   {
     icon: <HospitalIcon />,
     name: "Gestions des consultations",
-    path: "/gestion-consultations",
+    path: "/admin/consultations",
   },
   {
     name: "Reservations",
     icon: <TableIcon />,
-   path: "/reservations",
+   path: "/admin/calendar",
   },
     {
     name: "Notifications",
