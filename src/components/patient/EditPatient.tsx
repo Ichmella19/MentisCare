@@ -14,7 +14,7 @@ export default function EditUser({onClose}: {onClose: () => void}) {
           ></div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md md:max-w-lg p-4 sm:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">Ajouter un Patient</h2>
+              <h2 className="text-lg font-semibold">Modifier un Patient</h2>
               <button onClick={() => onClose()}>✖</button>
             </div>
               <Formik
@@ -111,6 +111,7 @@ export default function EditUser({onClose}: {onClose: () => void}) {
                                    type="button"
                               
                                    className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full sm:w-auto"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         onClick={() => onClose()}
                                  >
                                    Annuler
                                  </button>

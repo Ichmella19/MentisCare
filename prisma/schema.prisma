@@ -14,7 +14,7 @@ enum Role {
  
 model User {
   id            String          @id @default(cuid())
-  name          String?
+  name          String
   email         String          @unique
   emailVerified DateTime?
   password      String?
@@ -96,14 +96,17 @@ model Authenticator {
 model Patient {
   id            Int     @id @default(autoincrement())
   name          String?
-   email       String?
+   email       String?  
   phone       String?
   adresse       String
   sexe          String
   pays          String
   dateNaissance String
   userId        String
+  matricule     String  @unique
   Suivi         Suivi[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
 
 model Suivi {

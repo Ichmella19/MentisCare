@@ -4,6 +4,7 @@ import { useState } from "react";
 import AddPatient from "@/components/patient/AddPatient";
 import DeletePatient from "@/components/patient/DeletePatient";
 import EditPatient from "@/components/patient/EditPatient";
+import { useRouter } from "next/navigation";
 // Définition du type Patient
 type Patient = {
   id: number;
@@ -16,39 +17,15 @@ type Patient = {
 };
 
 export default function TablePatient() {
+    // const router = useRouter();
+    const [patients, setPatients] = useState<Patient[]>([]);
+  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [search, setSearch] = useState("");
-  const [patients, setPatients] = useState<Patient[]>([
-    {
-      id: 1,
-      name: "Jean Dupont",
-      email: "jean@mail.com",
-      phone: "+22912345678",
-      adresse: "Cotonou",
-      sexe: "M",
-      dateNaissance: "1995-03-12",
-    },
-    {
-      id: 2,
-      name: "Awa Koné",
-      email: "awa.kone@mail.com",
-      phone: "+22987654321",
-      adresse: "Abidjan",
-      sexe: "F",
-      dateNaissance: "2000-07-05",
-    },
-    {
-      id: 3,
-      name: "Paul Martin",
-      email: "paul.martin@mail.com",
-      phone: "+22999887766",
-      adresse: "Lomé",
-      sexe: "M",
-      dateNaissance: "1990-01-20",
-    },
-  ]);
+
+
 
   const handleDeleteClick = (patient: Patient) => {
     setSelectedPatient(patient);

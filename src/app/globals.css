@@ -198,7 +198,7 @@
 }
 
 @utility menu-item-active {
-  @apply bg-brand-50 text-[#08A3DC] dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-[#08A3DC] dark:bg-brand-500/[0.12] dark:text-[#08A3DC];
 }
 
 @utility menu-item-inactive {
@@ -210,7 +210,7 @@
 }
 
 @utility menu-item-icon-active {
-  @apply text-[#08A3DC] dark:text-brand-400;
+  @apply text-[#08A3DC] dark:text-[#08A3DC];
 }
 
 @utility menu-item-icon-inactive {
@@ -222,7 +222,7 @@
 }
 
 @utility menu-item-arrow-active {
-  @apply rotate-180 text-[#08A3DC] dark:text-brand-400;
+  @apply rotate-180 text-[#08A3DC] dark:text-[#08A3DC];
 }
 
 @utility menu-item-arrow-inactive {
@@ -234,7 +234,7 @@
 }
 
 @utility menu-dropdown-item-active {
-  @apply bg-brand-50 text-[#08A3DC] dark:bg-brand-500/[0.12] dark:text-brand-400;
+  @apply bg-brand-50 text-[#08A3DC] dark:bg-brand-500/[0.12] dark:text-[#08A3DC];
 }
 
 @utility menu-dropdown-item-inactive {
@@ -242,7 +242,7 @@
 }
 
 @utility menu-dropdown-badge {
-  @apply block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase text-[#08A3DC] dark:text-brand-400;
+  @apply block rounded-full px-2.5 py-0.5 text-xs font-medium uppercase text-[#08A3DC] dark:text-[#08A3DC];
 }
 
 @utility menu-dropdown-badge-active {
@@ -455,7 +455,7 @@ span.flatpickr-weekday,
 .flatpickr-day.startRange.nextMonthDay,
 .flatpickr-day.endRange.nextMonthDay {
   background: #08A3DC;
-  @apply !border-[#08A3DC] !bg-[#08A3DC] hover:!border-brand-50 hover:!bg-brand-500;
+  @apply !border-[#08A3DC] !bg-[#08A3DC] hover:!border-brand-50 hover:!bg-[#08A3DC];
 }
 .flatpickr-day.selected.startRange + .endRange:not(:nth-child(7n + 1)),
 .flatpickr-day.startRange.startRange + .endRange:not(:nth-child(7n + 1)),
@@ -699,7 +699,7 @@ span.flatpickr-weekday,
   @apply !bg-gray-50 dark:!bg-gray-900;
 }
 .jvectormap-region.jvectormap-element {
-  @apply !fill-gray-300 hover:!fill-[#08A3DC] dark:!fill-gray-700 dark:hover:!fill-brand-500;
+  @apply !fill-gray-300 hover:!fill-[#08A3DC] dark:!fill-gray-700 dark:hover:!fill-[#08A3DC];
 }
 .jvectormap-marker.jvectormap-element {
   @apply !stroke-gray-200 dark:!stroke-gray-800;
@@ -713,7 +713,7 @@ span.flatpickr-weekday,
 }
 
 .form-check-input:checked ~ span {
-  @apply border-[6px] border-[#08A3DC] bg-[#08A3DC] dark:border-brand-500;
+  @apply border-[6px] border-[#08A3DC] bg-[#08A3DC] dark:border-[#08A3DC];
 }
 
 .taskCheckbox:checked ~ .box span {
@@ -723,7 +723,7 @@ span.flatpickr-weekday,
   @apply text-gray-400 line-through;
 }
 .taskCheckbox:checked ~ .box {
-  @apply border-[#08A3DC] bg-[#08A3DC] dark:border-brand-500;
+  @apply border-[#08A3DC] bg-[#08A3DC] dark:border-[#08A3DC];
 }
 
 .task {

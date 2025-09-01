@@ -1,63 +1,62 @@
 "use client";
 import { FaEdit, FaTrash } from "react-icons/fa";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { listUsers } from "@/app/admin/(others-pages)/users/action";
+import { deleteUser } from "@/app/admin/(others-pages)/users/action";
+
+import { toast } from "react-toastify";
+
 // import { Formik, Form, Field } from "formik";
 // import * as Yup from "yup";
 import AddUser from "@/components/user/AddUser";
 import EditUser from "@/components/user/EditUser";
 import DeleteUser from "@/components/user/DeleteUser";
+import { useRouter } from "next/navigation";
+
 // import { SheetDemo } from "./Test";
 
 interface User {
-  id: number;
+  id: string;
   name: string;
   email: string;
-  status: "Actif" | "Non actif";
-  createdAt: string;
-  avatar: string;
+  role: string;
+  statut: boolean;
+  createdAt: Date;
+  image: string;
 }
 
 export default function TableUser() {
+ 
+    const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [users, setUsers] = useState<User[]>([
-    {
-      id: 1,
-      name: "Amine Diallo",
-      email: "amine.diallo@gmail.com",
-      status: "Actif",
-      createdAt: "2025-08-17 16:19:27",
-      avatar: "/images/user/user-04.jpg",
-    },
-    {
-      id: 2,
-      name: "Fatou Ndiaye",
-      email: "fatou.ndiaye@gmail.com",
-      status: "Actif",
-      createdAt: "2025-08-17 16:19:26",
-      avatar: "/images/user/user-03.jpg",
-    },
-    {
-      id: 3,
-      name: "Lucas Morel",
-      email: "lucas.morel@gmail.com",
-      status: "Actif",
-      createdAt: "2025-08-16 14:12:45",
-      avatar: "/images/user/user-08.jpg",
-    },
-    {
-      id: 4,
-      name: "Sophie Bernard",
-      email: "sophie.bernard@gmail.com",
-      status: "Actif",
-      createdAt: "2025-08-15 10:22:19",
-      avatar: "/images/user/user-09.jpg",
-    },
-  ]);
+
+  const [users, setUsers] = useState<User[]>([]);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
+ useEffect(() => {
+    async function loadUsers() {
+      const result = await listUsers();
+      if (result.success) {
+        setUsers(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          result.data.map((u: any) => ({
+            id: u.id,
+            name: u.name ?? "",
+            email: u.email,
+            role: u.role,
+            statut: u.statut,
+            createdAt: new Date(u.createdAt),
+            image: u.image ?? "",
+          }))
+        );
+      }
+    }
+    loadUsers();
+  }, []);
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);
@@ -68,13 +67,28 @@ export default function TableUser() {
     setIsEditModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    if (selectedUser) {
+  const confirmDelete = async () => {
+  if (!selectedUser) return;
+
+  try {
+    const result = await deleteUser(selectedUser.id); 
+
+    if (result.success) {
+      // Supprime l'utilisateur du state
       setUsers((prevUsers) => prevUsers.filter((u) => u.id !== selectedUser.id));
+      toast.success(result.message);
       setIsDeleteModalOpen(false);
       setSelectedUser(null);
+      // router.refresh(); // Actualiser la page pour refléter les changements
+      router.push('/admin/users');
+    } else {
+      toast.error(result.message || "Erreur lors de la suppression.");
     }
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error("Erreur serveur");
+  }
+};
 
   const filteredUsers = users.filter(
     (u) =>
@@ -125,6 +139,7 @@ export default function TableUser() {
               <tr className="bg-gray-100 dark:bg-gray-700 text-left">
                 <th className="p-3">Nom Complet</th>
                 <th className="p-3">Email</th>
+                <th  className="p-3">Role</th>
                 <th className="p-3">Statut</th>
                 <th className="p-3">Date</th>
                 <th className="p-3 text-center">Actions</th>
@@ -139,7 +154,7 @@ export default function TableUser() {
                   >
                     <td className="p-3 flex items-center gap-2">
                       <img
-                        src={user.avatar}
+                        src={user.image}
                         alt={user.name}
                         className="w-8 h-8 rounded-full"
                       />
@@ -148,18 +163,18 @@ export default function TableUser() {
                       </span>
                     </td>
                     <td className="p-3 truncate max-w-[150px]">{user.email}</td>
+                    <td className="p-3">{user.role === "ADMIN" ? "Admin" : "User"}</td>
                     <td className="p-3">
                       <span
-                        className={`px-2 py-1 rounded text-white text-sm ${
-                          user.status === "Actif"
-                            ? "bg-green-600"
-                            : "bg-red-600"
-                        }`}
+                        
                       >
-                        {user.status}
+                        {user.statut ? "Actif ✅" : "Inactif ❌"}
                       </span>
                     </td>
-                    <td className="p-3">{user.createdAt}</td>
+                   <td className="p-3">
+  {new Date(user.createdAt).toLocaleDateString()}
+</td>
+
                     <td className="p-3 text-center flex gap-2 justify-center flex-wrap">
                       <button
                         onClick={() => handleEditClick(user)}
@@ -197,7 +212,7 @@ export default function TableUser() {
               >
                 <div className="flex items-center gap-2">
                   <img
-                    src={user.avatar}
+                    src={user.image}
                     alt={user.name}
                     className="w-10 h-10 rounded-full"
                   />
@@ -205,13 +220,11 @@ export default function TableUser() {
                 </div>
                 <p className="text-sm text-gray-600 break-words">{user.email}</p>
                 <span
-                  className={`px-2 py-1 w-fit rounded text-white text-sm ${
-                    user.status === "Actif" ? "bg-green-600" : "bg-red-600"
-                  }`}
+                  className={`px-2 py-1 w-fit rounded text-white text-sm `}
                 >
-                  {user.status}
+                  {user.statut}
                 </span>
-                <p className="text-xs text-gray-500">{user.createdAt}</p>
+                <p className="text-xs text-gray-500">{user.createdAt.toLocaleDateString()}</p>
                 <div className="flex flex-wrap gap-3 mt-2">
                   <button
                     onClick={() => handleEditClick(user)}
@@ -241,95 +254,25 @@ export default function TableUser() {
 
       {/* Modal Ajout */}
       {isModalOpen && (
-        // <ModalWrapper onClose={() => setIsModalOpen(false)} title="Ajouter un Utilisateur">
-        //   <Formik
-        //     initialValues={{ name: "", email: "", role: "User" }}
-        //     validationSchema={Yup.object({
-        //       name: Yup.string().required("Nom obligatoire"),
-        //       email: Yup.string()
-        //         .email("Email invalide")
-        //         .required("Email obligatoire"),
-        //       role: Yup.string()
-        //         .oneOf(["Admin", "User"])
-        //         .required("Rôle obligatoire"),
-        //     })}
-        //     onSubmit={(values) => {
-        //       console.log("Nouveau user :", values);
-        //       setIsModalOpen(false);
-        //     }}
-        //   >
-        //     {({ errors, touched }) => (
-        //       <Form className="space-y-4">
-        //         <FormInput name="name" label="Nom complet *" errors={errors} touched={touched} />
-        //         <FormInput name="email" label="Email *" type="email" errors={errors} touched={touched} />
-        //         <div>
-        //           <label className="block mb-1">Rôle *</label>
-        //           <Field as="select" name="role" className="w-full p-2 border rounded">
-        //             <option value="User">User</option>
-        //             <option value="Admin">Admin</option>
-        //           </Field>
-        //         </div>
-        //         <ModalActions onCancel={() => setIsModalOpen(false)} />
-        //       </Form>
-        //     )}
-        //   </Formik>
-        // </ModalWrapper>
         <AddUser onClose={() => setIsModalOpen(false)} />
-        // <SheetDemo onClose={() => setIsModalOpen(false)} />
       )}
 
       {/* Modal Suppression */}
-      {isDeleteModalOpen && (
-        // <ModalWrapper onClose={() => setIsDeleteModalOpen(false)} title="Supprimer un utilisateur">
-        //   <h3 className="text-lg font-bold mb-4 text-red-600">
-        //     Voulez-vous vraiment supprimer cet utilisateur ?
-        //   </h3>
-        //   <p className="mb-6 text-black dark:text-white">
-        //     Cliquer sur <span className="font-semibold">Valider</span> pour effectuer votre action.
-        //   </p>
-        //   <ModalActions
-        //     onCancel={() => setIsDeleteModalOpen(false)}
-        //     onConfirm={confirmDelete}
-        //     confirmLabel="Valider"
-        //     confirmClass="bg-red-500 hover:bg-red-600"
-        //   />
-        // </ModalWrapper>
-        <DeleteUser onSucces={confirmDelete} onClose={() => setIsDeleteModalOpen(false)} />
-      )}
+    {isDeleteModalOpen && selectedUser && (
+  <DeleteUser 
+    onClose={() => setIsDeleteModalOpen(false)} 
+    onSucces={confirmDelete} 
+  />
+)}
 
       {/* Modal Modification */}
-      {isEditModalOpen && (
-        // <ModalWrapper onClose={() => setIsEditModalOpen(false)} title="Modifier l’utilisateur">
-        //   <Formik
-        //     initialValues={{ name: "", email: "", status: "Actif" }}
-        //     validationSchema={Yup.object({
-        //       name: Yup.string().required("Nom obligatoire"),
-        //       email: Yup.string().email("Email invalide").required("Email obligatoire"),
-        //       status: Yup.string().oneOf(["Actif", "Non actif"]).required("Statut obligatoire"),
-        //     })}
-        //     onSubmit={(values) => {
-        //       console.log("Utilisateur modifié :", values);
-        //       setIsEditModalOpen(false);
-        //     }}
-        //   >
-        //     {({ errors, touched }) => (
-        //       <Form className="space-y-4">
-        //         <FormInput name="name" label="Nom" errors={errors} touched={touched} />
-        //         <FormInput name="email" label="Email" type="email" errors={errors} touched={touched} />
-        //         <div>
-        //           <label className="block mb-1">Statut</label>
-        //           <Field as="select" name="status" className="w-full p-2 border rounded">
-        //             <option value="Actif">Actif</option>
-        //             <option value="Non actif">Non actif</option>
-        //           </Field>
-        //         </div>
-        //         <ModalActions onCancel={() => setIsEditModalOpen(false)} />
-        //       </Form>
-        //     )}
-        //   </Formik>
-        // </ModalWrapper>
-        <EditUser onClose={() => setIsEditModalOpen(false)} />
-      )}
+     {isEditModalOpen && selectedUser && (
+  <EditUser
+    user={selectedUser}
+    onClose={() => setIsEditModalOpen(false)}
+  />
+)}
+
     </div>
   );
 }

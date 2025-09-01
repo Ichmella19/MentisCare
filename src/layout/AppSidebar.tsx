@@ -57,12 +57,12 @@ const navItems: NavItem[] = [
     {
     name: "Notifications",
     icon: <BellIcon />,
- path: "/notifications",
+ path: "/admin/notifications",
   },
    {
     name: "Portfeuille",
     icon: <WalletIcon />,
-   path: "/portfeuille",
+   path: "/admin/portfeuille",
   },
 ];
 

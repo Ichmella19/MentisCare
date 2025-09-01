@@ -25,9 +25,7 @@ export default function RootLayout({
     <html lang="en" className={montserrat.variable}>
       <body >
         <SessionProvider>
-
-            <ToastContainer/>
-
+          <ToastContainer position="bottom-right" autoClose={3000}/>
             <ThemeProvider>
               <SidebarProvider>{children}</SidebarProvider>
             </ThemeProvider>
