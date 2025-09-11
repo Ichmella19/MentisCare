@@ -2,6 +2,9 @@
 import React from "react";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
+import { toast } from "react-toastify";
+import { addPatient } from "@/app/admin/(others-pages)/patients/action";
+
 
 export default function AddPatient({ onClose }: { onClose: () => void }) {
   return (
@@ -22,27 +25,49 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
         <Formik
           initialValues={{
             name: "",
-            mail: "",
+            email: "",
             phone: "",
             adresse: "",
+            pays: "" ,
             sexe: "",
             dateNaissance: "",
           }}
           validationSchema={Yup.object({
             name: Yup.string().required("Nom obligatoire"),
-            mail: Yup.string()
+            email: Yup.string()
               .email("Email invalide")
               .required("Email obligatoire"),
             phone: Yup.string().required("Téléphone obligatoire"),
             adresse: Yup.string().required("Adresse obligatoire"),
+            pays: Yup.string().required("Pays obligatoire"),
             sexe: Yup.string().required("Sexe obligatoire"),
             dateNaissance: Yup.string().required(
               "Date de naissance obligatoire"
             ),
           })}
-          onSubmit={(values) => {
-            console.log("Nouveau patient :", values);
-          }}
+            onSubmit={async (values, { setSubmitting, resetForm }) => {
+                     try {
+                        
+                       const result = await addPatient(values.name, values.email, values.phone , values.adresse ,  values.sexe , values.dateNaissance ,values.pays , "1" 
+
+                       );
+         
+                       if (result.success) {
+                         toast.success("Patient ajouté avec succès !");
+                         window.location.href = "/admin/patients"; // Actualiser la page pour refléter les changements
+                         resetForm();
+                         onClose();
+         
+                       } else {
+                         toast.error(result.message || "Erreur lors de l'ajout.");
+                       }
+                     } catch (error) {
+                       console.error("Erreur lors de l'ajout :", error);
+                       toast.error("Erreur serveur");
+                     } finally {
+                       setSubmitting(false);
+                     }
+                   }}
         >
           {({ errors, touched }) => (
             <Form className="space-y-4">
@@ -56,13 +81,13 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
               )}
 
               <Field
-                name="mail"
+                name="email"
                 type="email"
                 placeholder="Email"
                 className="w-full border px-3 py-2 rounded"
               />
-              {errors.mail && touched.mail && (
-                <p className="text-red-500 text-sm">{errors.mail}</p>
+              {errors.email && touched.email && (
+                <p className="text-red-500 text-sm">{errors.email}</p>
               )}
 
               <Field
@@ -82,13 +107,20 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
               {errors.adresse && touched.adresse && (
                 <p className="text-red-500 text-sm">{errors.adresse}</p>
               )}
-
+               <Field
+                name="pays"
+                placeholder="pays"
+                className="w-full border px-3 py-2 rounded"
+              />
+              {errors.pays && touched.pays && (
+                <p className="text-red-500 text-sm">{errors.pays}</p>
+              )}
               <Field
                 as="select"
                 name="sexe"
                 className="w-full border px-3 py-2 rounded"
               >
-                <option value="">Sexe</option>
+                <option value="Sexe">Sexe</option>
                 <option value="M">Masculin</option>
                 <option value="F">Féminin</option>
               </Field>

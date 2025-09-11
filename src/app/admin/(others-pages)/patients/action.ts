@@ -1,6 +1,8 @@
 "use server";
 
 import prisma from "@/lib/db";
+import { genererMatriculeUnique } from "@/lib/zod";
+
 
 export async function listPatients() {
     const patients = await prisma.patient.findMany({
@@ -20,10 +22,11 @@ export async function addPatient(
   sexe: string,
   dateNaissance: string,
   pays: string,
-  matricule: string,
+  
   userId: string
 ) {
   try {
+      const matricule = genererMatriculeUnique();
     await prisma.patient.create({
       data: {
         name,

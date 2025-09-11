@@ -54,6 +54,7 @@ import ChatIcon from "./chat.svg";
 import MoreDotIcon from "./more-dot.svg";
 import BellIcon from "./bell.svg";
 import HospitalIcon from "./hospital.svg";
+import Layers from "./layers.svg";
 
 export {
   DownloadIcon,
@@ -112,5 +113,5 @@ export {
   ChatIcon,
   WalletIcon,
   PersonIcon,
- 
+ Layers,
 };

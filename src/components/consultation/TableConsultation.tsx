@@ -1,10 +1,12 @@
 "use client";
 /* eslint-disable react/no-unescaped-entities */
-import {  FaEdit,FaTrash } from "react-icons/fa";
+
 import { useState } from "react";
-import AddConsultation from "@/components/consultation/AddConsultation";
-import EditConsultation from "@/components/consultation/EditConsultation";
-import DeleteConsultation from "@/components/consultation/DeleteConsultation";
+// import { listConsultations } from "@/app/admin/(others-pages)/consultations/action";
+
+
+import { Eye } from "lucide-react";
+
 
 
 
@@ -14,67 +16,20 @@ type Consultation = {
   createdAt: string;                 
   quantite: number;                 
   stock: number;                    
-  status: "Vide" | "Reste" | "Plein";
+  // status: "Vide" | "Reste" | "Plein";
 };
 
 export default function TableConsultations() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [consultations, setConsultations] = useState<Consultation[]>([
-    {
-      id: 1,
-      categorie: "dépression",
-      createdAt: "2025-08-17",
-      quantite: 20,
-      stock: 15,
-      status: "Vide",
-      
-      
-    },
-    {
-      id: 2,
-      categorie: "dépression",
-      createdAt: "2025-08-17",
-      quantite: 20,
-      stock: 15,
-      status: "Reste" ,
-      
-      
-    },
-     {
-      id: 3,
-      categorie: "dépression",
-      createdAt: "2025-08-17",
-      quantite: 20,
-      stock: 15,
-      status:  "Plein",
-      
-      
-    },
-    
-  ]);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
  
-  const handleEditClick = (consultation: Consultation) => {
-    setSelectedConsultation(consultation);
-    setIsEditModalOpen(true);
-  };
-  const handleDeleteClick = (consultation: Consultation) => {
-    setSelectedConsultation(consultation);
-    setIsDeleteModalOpen(true);
-  };
-
+  const [search, setSearch] = useState("");
+  // const [consultations, setConsultations] = useState<Consultation[]>([
+    
+    
+  // ]);
   
+  // const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
+ 
 
-  const confirmDelete = () => {
-    if (selectedConsultation) {
-      setConsultations((prev) => prev.filter((c) => c.id !== selectedConsultation.id));
-      setIsDeleteModalOpen(false);
-      setSelectedConsultation(null);
-    }
-  };
 
   const filteredConsultations = consultations.filter(
     (c) =>
@@ -96,12 +51,7 @@ export default function TableConsultations() {
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
           <h2 className="text-lg font-semibold">Historiques des Consultations</h2>
-          <button
-            className="px-4 py-2 bg-[#08A3DC] text-white rounded-md hover:bg-[#067aa6] w-full sm:w-auto"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Ajouter une Consultation
-          </button>
+         
         </div>
 
         {/* Search */}
@@ -113,9 +63,7 @@ export default function TableConsultations() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-2 border rounded-md"
           />
-          <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 w-full sm:w-auto">
-            Rechercher
-          </button>
+         
         </div>
 
         {/* Table for desktop/tablet */}
@@ -143,22 +91,14 @@ export default function TableConsultations() {
                     <td className="p-3">{c.createdAt}</td>
                     <td className="p-3">{c.quantite}</td>
                     <td className="p-3">{c.stock}</td>
-                    <td className="p-3">{c.status}</td>
+                  
+
                     <td className="p-3 text-center flex gap-2 justify-center flex-wrap">
                       <button
                       
-                        onClick={() => handleEditClick(selectedConsultation!)}
-                        className="p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                      >
-                        <FaEdit />
-                      </button>
-                      <button
-                       
-                        onClick={() => handleDeleteClick(selectedConsultation!)}
-                        className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                      >
-                        <FaTrash />
-                      </button>
+                    className="border-[#08A3DC] rounded-[5px]  border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] hover:text-white transition">
+                      <Eye />
+                    </button>
                     </td>
                    
                   </tr>
@@ -179,55 +119,12 @@ export default function TableConsultations() {
       </div>
 
       {/* MODAL AJOUT */}
-      {isModalOpen && (
-        // <div className="fixed inset-0 flex justify-center items-center p-4 z-50">
-        //   <div className="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
-        //   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6 relative z-10 mx-2 sm:mx-4">
-        //     <div className="flex justify-between items-center mb-4">
-        //       <h2 className="text-lg font-semibold">Ajouter une Consultation</h2>
-        //       <button onClick={() => setIsModalOpen(false)}>✖</button>
-        //     </div>
-
-           
-        //   </div>
-        // </div>
-        <AddConsultation onClose={() => setIsModalOpen(false)} />
-      )}
-
-      {/* MODAL SUPPRESSION */}
-      {isDeleteModalOpen && (
-        // <div className="fixed inset-0 flex justify-center items-center p-4 z-50">
-        //   <div className="fixed inset-0 bg-black/40 backdrop-blur-sm"></div>
-        //   <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6 relative z-10 mx-2 sm:mx-4">
-        //     <h3 className="text-lg font-bold mb-4 text-red-600">
-        //       Voulez-vous vraiment supprimer cette consultation ?
-        //     </h3>
-        //     <p className="mb-6 text-black dark:text-white">
-        //       Cliquer sur <span className="font-semibold">Valider</span> pour effectuer votre action.
-        //     </p>
-        //     <div className="flex justify-end gap-4">
-        //       <button
-        //         onClick={() => setIsDeleteModalOpen(false)}
-        //         className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
-        //       >
-        //         Annuler
-        //       </button>
-        //       <button
-        //         onClick={confirmDelete}
-        //         className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-        //       >
-        //         Valider
-        //       </button>
-        //     </div>
-        //   </div>
-        // </div>
-        <DeleteConsultation onSucces={confirmDelete} onClose={() => setIsDeleteModalOpen(false)} />
-      )}
-
-      {/* MODAL MODIFICATION */}
-      {isEditModalOpen && (
+     
+     
+      {/* MODAL DETAILS */}
+      {/* {isEditModalOpen && (
         <EditConsultation onClose={() => setIsEditModalOpen(false)} />
-      )}
+      )} */}
     
     </div>
   );

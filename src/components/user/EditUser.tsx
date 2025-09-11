@@ -5,7 +5,6 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { editUser } from "@/app/admin/(others-pages)/users/action";
-import {useRouter} from "next/navigation";
 
 type User = {
   id: string;
@@ -24,17 +23,16 @@ export default function EditUser({
   onClose: () => void;
   onSuccess?: (updatedUser: User) => void;
 }) {
-  const router = useRouter();
   return (
-    <div className="fixed inset-0 flex justify-center items-center p-4 z-50">
+    <div className="fixed inset-0 flex justify-center items-center p-2 sm:p-4 z-50">
       <div
-        className="fixed inset-0 bg-black/40"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative z-10">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Modifier l’utilisateur</h2>
+          <h2 className="text-lg font-semibold">Modifier les informations de cet utilisateur</h2>
           <button onClick={onClose}>✖</button>
         </div>
 
@@ -66,8 +64,7 @@ export default function EditUser({
 
               if (response.success) {
                 toast.success("Utilisateur mis à jour avec succès !");
-                router.push('/admin/users');
-                router.refresh();
+                window.location.href = "/admin/users";
                 
                 // Appel de onSuccess si fourni pour mettre à jour la liste
                 if (onSuccess) {
@@ -136,7 +133,7 @@ export default function EditUser({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
                 >
                   Annuler
                 </button>

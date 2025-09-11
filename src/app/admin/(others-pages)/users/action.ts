@@ -2,17 +2,27 @@
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export async function listUsers() {
+const take = 2; // Nombre d'utilisateurs par page
+
+export async function listUsers(page: number, search:string) {
+    const skip = (page - 1) * take;
     const users = await prisma.user.findMany({
+        where:{
+            OR:[
+                {name: {contains:search.toLowerCase(), mode: 'insensitive'}},
+                {email: {contains:search.toLowerCase(), mode: 'insensitive'}}
+            ]
+        },
         orderBy: { createdAt: 'desc' },
+        take,
+        skip,
     });
-    const formatted = users.map((u) => ({
-    ...u,
-    statut: u.statut ?? "Inactif", // valeur par défaut
-    image: u.image ?? "/default-avatar.png", // avatar par défaut
-    createdAt: u.createdAt.toISOString(), // string ISO
-  }));
-    return { success: true, data: users};
+
+    const totalUsers = await prisma.user.count();
+    const totalPages = Math.ceil(totalUsers / take);
+
+//    
+    return { success: true, data: {users, totalPages} };
 
 }
 

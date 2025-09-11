@@ -1,9 +1,11 @@
 "use client";
 import { FaEdit, FaTrash } from "react-icons/fa";
+// import {Eye} from "lucide-react"
 import { useState, useEffect } from "react";
 import { listUsers } from "@/app/admin/(others-pages)/users/action";
 import { deleteUser } from "@/app/admin/(others-pages)/users/action";
-
+import User from "@/assets/images/user.webp";
+import Image from "next/image";
 import { toast } from "react-toastify";
 
 // import { Formik, Form, Field } from "formik";
@@ -11,7 +13,8 @@ import { toast } from "react-toastify";
 import AddUser from "@/components/user/AddUser";
 import EditUser from "@/components/user/EditUser";
 import DeleteUser from "@/components/user/DeleteUser";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Paginate } from "../Paginate";
 
 // import { SheetDemo } from "./Test";
 
@@ -28,22 +31,28 @@ interface User {
 export default function TableUser() {
  
     const router = useRouter();
-
+    const searchParam = useSearchParams();
+    const page = parseInt(searchParam?.get("page") || "1");
+    const param = searchParam?.get("search") ?? "";
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const [users, setUsers] = useState<User[]>([]);
 
+  const [totalPages, setTotalPages] = useState(1); // Pour la pagination
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
  useEffect(() => {
     async function loadUsers() {
-      const result = await listUsers();
+
+      const result = await listUsers(page,search); // Charger la première page
       if (result.success) {
         setUsers(
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          result.data.map((u: any) => ({
+          result.data.users.map((u: any) => ({
             id: u.id,
             name: u.name ?? "",
             email: u.email,
@@ -53,10 +62,11 @@ export default function TableUser() {
             image: u.image ?? "",
           }))
         );
+        setTotalPages(result.data.totalPages);
       }
     }
     loadUsers();
-  }, []);
+  }, [search]);
   const handleDeleteClick = (user: User) => {
     setSelectedUser(user);
     setIsDeleteModalOpen(true);
@@ -90,11 +100,11 @@ export default function TableUser() {
   }
 };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(search.toLowerCase()) ||
-      u.email.toLowerCase().includes(search.toLowerCase())
-  );
+  // const filteredUsers = users.filter(
+  //   (u) =>
+  //     u.name.toLowerCase().includes(search.toLowerCase()) ||
+  //     u.email.toLowerCase().includes(search.toLowerCase())
+  // );
 
   return (
     <div
@@ -127,9 +137,6 @@ export default function TableUser() {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full p-2 border rounded-md"
           />
-          <button className="px-4 py-2 bg-yellow-600 text-white rounded-md hover:bg-yellow-700 w-full sm:w-auto">
-            Rechercher
-          </button>
         </div>
 
         {/* Table for desktop/tablet */}
@@ -146,15 +153,15 @@ export default function TableUser() {
               </tr>
             </thead>
             <tbody>
-              {filteredUsers.length > 0 ? (
-                filteredUsers.map((user) => (
+              {users.length > 0 ? (
+                users.map((user) => (
                   <tr
                     key={user.id}
                     className="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
                   >
                     <td className="p-3 flex items-center gap-2">
-                      <img
-                        src={user.image}
+                      <Image
+                       src={User}
                         alt={user.name}
                         className="w-8 h-8 rounded-full"
                       />
@@ -164,27 +171,41 @@ export default function TableUser() {
                     </td>
                     <td className="p-3 truncate max-w-[150px]">{user.email}</td>
                     <td className="p-3">{user.role === "ADMIN" ? "Admin" : "User"}</td>
-                    <td className="p-3">
-                      <span
-                        
-                      >
-                        {user.statut ? "Actif ✅" : "Inactif ❌"}
-                      </span>
-                    </td>
+                   <td className="p-3">
+  <button
+    onClick={() => {
+      // Ici tu peux mettre ta logique de changement de statut (API, state, etc.)
+      console.log("Toggle statut", user.id);
+    }}
+    className={`relative inline-flex h-6 w-12 items-center rounded-full transition-colors duration-300 ${
+      user.statut ? "bg-green-300" : "bg-red-300"
+    }`}
+  >
+    <span
+      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-300 ${
+        user.statut ? "translate-x-6" : "translate-x-1"
+      }`}
+    />
+  </button>
+</td>
+
                    <td className="p-3">
   {new Date(user.createdAt).toLocaleDateString()}
 </td>
 
                     <td className="p-3 text-center flex gap-2 justify-center flex-wrap">
+                      {/* <button className=" border-[#08A3DC] rounded-[5px] dark:hover:bg-[#08A3DC] bg-gray-200 dark:bg-transparent border-1  hover:bg-[#08A3DC] hover:text-white transition">
+                        <Eye />
+                      </button>  */}
                       <button
                         onClick={() => handleEditClick(user)}
-                        className="p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                        className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC]  hover:text-white transition"
                       >
                         <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDeleteClick(user)}
-                        className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                        className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
                       >
                         <FaTrash />
                       </button>
@@ -201,18 +222,20 @@ export default function TableUser() {
             </tbody>
           </table>
         </div>
-
+        { totalPages === 1 ? ''
+        :<Paginate pages ={totalPages} currentPage={page} path="/admin/users" param={param} />
+        }
         {/* Mobile view: cards */}
         <div className="block md:hidden space-y-3">
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
+          {users.length > 0 ? (
+            users.map((user) => (
               <div
                 key={user.id}
                 className="p-3 border rounded-md shadow-sm flex flex-col gap-2"
               >
                 <div className="flex items-center gap-2">
-                  <img
-                    src={user.image}
+                  <Image
+                    src={User}
                     alt={user.name}
                     className="w-10 h-10 rounded-full"
                   />
@@ -228,13 +251,13 @@ export default function TableUser() {
                 <div className="flex flex-wrap gap-3 mt-2">
                   <button
                     onClick={() => handleEditClick(user)}
-                    className="p-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                    className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
                   >
                     <FaEdit />
                   </button>
                   <button
                     onClick={() => handleDeleteClick(user)}
-                    className="p-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                    className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
                   >
                     <FaTrash />
                   </button>

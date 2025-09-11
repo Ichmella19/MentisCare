@@ -17,6 +17,7 @@ import {
   HospitalIcon,
   TableIcon,
   UserCircleIcon,
+  Layers,
 } from "../icons/index";
 
 
@@ -48,6 +49,11 @@ const navItems: NavItem[] = [
     icon: <HospitalIcon />,
     name: "Gestions des consultations",
     path: "/admin/consultations",
+  },
+    {
+    icon: <Layers />,
+    name: "Categories",
+    path: "/admin/categories",
   },
   {
     name: "Reservations",

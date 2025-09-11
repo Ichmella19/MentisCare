@@ -4,10 +4,9 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { addUser } from "@/app/admin/(others-pages)/users/action";
-import { useRouter } from "next/navigation";
 
 export default function AddUser({ onClose }: { onClose: () => void }) {
-  const router = useRouter();
+  
   return (
     <div className="fixed inset-0 flex justify-center items-center p-2 sm:p-4 z-50">
       <div
@@ -34,7 +33,7 @@ export default function AddUser({ onClose }: { onClose: () => void }) {
 
               if (result.success) {
                 toast.success("Utilisateur ajouté avec succès !");
-                router.push("/admin/users"); // Actualiser la page pour refléter les changements
+                window.location.href = "/admin/users"; // Actualiser la page pour refléter les changements
                 resetForm();
                 onClose();
 
