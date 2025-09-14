@@ -4,6 +4,8 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { listCategories } from "@/app/admin/(others-pages)/categories/action";
+
 import {
   EventInput,
   DateSelectArg,
@@ -12,116 +14,212 @@ import {
 } from "@fullcalendar/core";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
+import { toast } from "react-toastify";
 
+
+/**
+ * Type pour l'événement stocké localement / utilisé par FullCalendar
+ * extendedProps contient les infos personnalisées (service, patients, heures)
+ */
 interface CalendarEvent extends EventInput {
-  extendedProps: {
-    calendar: string;
+  extendedProps?: {
+    service?: string;
+    patients?: number;
+    startTime?: string;
+    endTime?: string;
+    [key: string]: unknown;
   };
 }
 
 const Calendar: React.FC = () => {
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
-    null
-  );
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventStartDate, setEventStartDate] = useState("");
-  const [eventEndDate, setEventEndDate] = useState("");
-  const [eventLevel, setEventLevel] = useState("");
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const calendarRef = useRef<FullCalendar>(null);
+
+  const calendarRef = useRef<unknown>(null); 
   const { isOpen, openModal, closeModal } = useModal();
 
-  const calendarsEvents = {
-    Danger: "danger",
-    Succès: "success",
-    Primaire: "primary",
-    Encours: "warning",
-  };
 
-  useEffect(() => {
-    // Initialize with some events
-    setEvents([
-      {
-        id: "1",
-        title: "Event Conf.",
-        start: new Date().toISOString().split("T")[0],
-        extendedProps: { calendar: "Danger" },
-      },
-      {
-        id: "2",
-        title: "Meeting",
-        start: new Date(Date.now() + 86400000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Success" },
-      },
-      {
-        id: "3",
-        title: "Workshop",
-        start: new Date(Date.now() + 172800000).toISOString().split("T")[0],
-        end: new Date(Date.now() + 259200000).toISOString().split("T")[0],
-        extendedProps: { calendar: "Primary" },
-      },
-    ]);
+  
+  const [categories, setCategories] = useState<{ id: string | number; name: string }[]>(
+    []
+  );
+  const [eventService, setEventService] = useState<string>("");
+  const [eventDate, setEventDate] = useState<string>(""); 
+  const [eventStartTime, setEventStartTime] = useState<string>("");
+  const [eventEndTime, setEventEndTime] = useState<string>(""); 
+  const [eventPatients, setEventPatients] = useState<number>(1);
+
+ useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const result = await listCategories();
+        if (result.success && result.data) {
+          setCategories(result.data);
+        } else {
+          setCategories([]);
+        }
+      } catch (error) {
+        console.error("Erreur lors du chargement des catégories :", error);
+        setCategories([]);
+      }
+    };
+    fetchCategories();
   }, []);
 
+  // Quand l'utilisateur sélectionne une plage dans le calendrier
   const handleDateSelect = (selectInfo: DateSelectArg) => {
     resetModalFields();
-    setEventStartDate(selectInfo.startStr);
-    setEventEndDate(selectInfo.endStr || selectInfo.startStr);
+    // selectInfo.startStr contient la date en yyyy-mm-dd ou datetime selon selection
+    setEventDate(selectInfo.startStr.split("T")[0]);
     openModal();
   };
 
+  // Quand l'utilisateur clique sur un événement
   const handleEventClick = (clickInfo: EventClickArg) => {
-    const event = clickInfo.event;
-    setSelectedEvent(event as unknown as CalendarEvent);
-    setEventTitle(event.title);
-    setEventStartDate(event.start?.toISOString().split("T")[0] || "");
-    setEventEndDate(event.end?.toISOString().split("T")[0] || "");
-    setEventLevel(event.extendedProps.calendar);
+    const ev = clickInfo.event;
+    const ext = ev.extendedProps || {};
+    setSelectedEvent({
+      id: ev.id,
+      title: ev.title,
+      start: ev.start ? ev.start.toISOString() : undefined,
+      end: ev.end ? ev.end.toISOString() : undefined,
+      extendedProps: {
+        service: ext.service || ev.title,
+        patients: ext.patients ?? 1,
+        startTime: ext.startTime ?? (ev.start ? formatTime(ev.start) : ""),
+        endTime: ext.endTime ?? (ev.end ? formatTime(ev.end) : ""),
+      },
+    });
+
+    // Préremplir les champs du modal
+    setEventService(ext.service ?? ev.title ?? "");
+    if (ev.start) {
+      setEventDate(ev.start.toISOString().split("T")[0]);
+      setEventStartTime(ext.startTime ?? formatTime(ev.start));
+    }
+    if (ev.end) {
+      setEventEndTime(ext.endTime ?? formatTime(ev.end));
+    }
+    setEventPatients(ext.patients ?? 1);
+
     openModal();
   };
 
+  // Ajout ou modification d'un événement
   const handleAddOrUpdateEvent = () => {
+     if (!eventService || !eventEndTime || !eventDate || !eventStartTime || !eventPatients) {
+    toast.error("Veuillez remplir tous les champs obligatoires.");
+    return;
+  }
+
+  // ici tu continues normalement
+  console.log("Formulaire valide :", {
+    eventService,
+    eventDate,
+    eventStartTime,
+    eventEndTime,
+    eventPatients,
+  });
+    // construire start et end en combinant date + heure si fournies
+    const startIso = buildDateTimeIso(eventDate, eventStartTime);
+    const endIso = buildDateTimeIso(eventDate, eventEndTime) || startIso;
+
     if (selectedEvent) {
-      // Update existing event
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === selectedEvent.id
+      // modifier
+      setEvents((prev) =>
+        prev.map((ev) =>
+          ev.id === selectedEvent.id
             ? {
-                ...event,
-                title: eventTitle,
-                start: eventStartDate,
-                end: eventEndDate,
-                extendedProps: { calendar: eventLevel },
+                ...ev,
+                title: eventService || `Service`,
+                start: startIso,
+                end: endIso,
+                allDay: false,
+                extendedProps: {
+                  ...ev.extendedProps,
+                  service: eventService,
+                  patients: eventPatients,
+                  startTime: eventStartTime,
+                  endTime: eventEndTime,
+                },
               }
-            : event
+            : ev
         )
       );
     } else {
-      // Add new event
+      // ajouter
       const newEvent: CalendarEvent = {
         id: Date.now().toString(),
-        title: eventTitle,
-        start: eventStartDate,
-        end: eventEndDate,
-        allDay: true,
-        extendedProps: { calendar: eventLevel },
+        title: eventService || "Service",
+        start: startIso,
+        end: endIso,
+        allDay: false,
+        extendedProps: {
+          service: eventService,
+          patients: eventPatients,
+          startTime: eventStartTime,
+          endTime: eventEndTime,
+        },
       };
-      setEvents((prevEvents) => [...prevEvents, newEvent]);
+      setEvents((prev) => [...prev, newEvent]);
     }
+
     closeModal();
     resetModalFields();
   };
 
+  // Réinitialiser champs
   const resetModalFields = () => {
-    setEventTitle("");
-    setEventStartDate("");
-    setEventEndDate("");
-    setEventLevel("");
     setSelectedEvent(null);
+    setEventService("");
+    setEventDate("");
+    setEventStartTime("");
+    setEventEndTime("");
+    setEventPatients(1);
+  };
+
+  // Helper : construire ISO datetime (YYYY-MM-DDTHH:MM:00) ou retourner date-only si pas d'heure
+  const buildDateTimeIso = (date: string, time: string) => {
+    if (!date) return undefined;
+    if (time) {
+      // garantir seconds
+      const t = time.length === 5 ? `${time}:00` : time;
+      return `${date}T${t}`;
+    }
+    return date; // fullcalendar acceptera date-only (allDay) — on gère allDay=false ci-dessus
+  };
+
+  // helper pour formater une Date en HH:MM
+  const formatTime = (d: Date) => {
+    const hh = `${d.getHours()}`.padStart(2, "0");
+    const mm = `${d.getMinutes()}`.padStart(2, "0");
+    return `${hh}:${mm}`;
+  };
+
+  // rendu de l'événement (petit badge dans le calendrier)
+  const renderEventContent = (eventInfo: EventContentArg) => {
+    const svc = (eventInfo.event.extendedProps?.service ??
+      eventInfo.event.title ??
+      "Service") as string;
+    const patients = eventInfo.event.extendedProps?.patients ?? null;
+    const timeText = eventInfo.timeText || "";
+
+    return (
+      <div className="flex items-center gap-2 p-1">
+        <div className="text-xs font-semibold">{svc}</div>
+        <div className="text-xs opacity-70">{timeText}</div>
+        {patients ? (
+          <div className="ml-1 text-xs text-gray-600">({patients})</div>
+        ) : null}
+      </div>
+    );
   };
 
   return (
-    <div className="rounded-2xl border  border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    <div
+      className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
       <div className="custom-calendar">
         <FullCalendar
           ref={calendarRef}
@@ -134,126 +232,122 @@ const Calendar: React.FC = () => {
           }}
           events={events}
           selectable={true}
-          select={handleDateSelect}
-          eventClick={handleEventClick}
-          eventContent={renderEventContent}
+          select={(info: DateSelectArg) => handleDateSelect(info)}
+          eventClick={(info: EventClickArg) => handleEventClick(info)}
+          eventContent={(info: EventContentArg) => renderEventContent(info)}
           customButtons={{
             addEventButton: {
-              text: "Ajouter une réservation +",
-             
+              text: "Ajouter un créneau +",
               click: openModal,
             },
           }}
         />
       </div>
+
       <Modal
         isOpen={isOpen}
-        onClose={closeModal}
+        onClose={() => {
+          closeModal();
+          resetModalFields();
+        }}
         className="max-w-[700px] p-6 lg:p-10 text-black dark:text-white"
       >
         <div className="flex flex-col px-2 overflow-y-auto custom-scrollbar">
           <div>
             <h5 className="mb-2 font-semibold text-gray-800 modal-title text-theme-xl dark:text-white/90 lg:text-2xl">
-              {selectedEvent ? "Modifier une réservation" : "Ajouter une réservation"}
+              {selectedEvent ? "Modifier un créneau" : "Ajouter un créneau"}
             </h5>
-            <p className="text-sm ">
-            Planifiez vos prochaines réservations : programmez ou modifiez une réservation pour vos patients afin de rester organisé.
+            <p className="text-sm">
+              Planifiez vos prochains créneaux : programmez ou modifiez un créneau
+              pour vos patients afin de rester organisé.
             </p>
           </div>
+
           <div className="mt-8">
-            <div>
-              <div>
-                <label className="mb-1.5 block text-sm font-medium ">
-                Type de réservation
-                </label>
-                <input
-                  id="event-title"
-                  type="text"
-                  value={eventTitle}
-                  onChange={(e) => setEventTitle(e.target.value)}
-                  className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                />
-              </div>
-            </div>
-            <div className="mt-6">
-              <label className="block mb-4 text-sm font-medium ">
-          Degré
+            {/* Service (select based on categories) */}
+            <div className="mb-6">
+              <label className="mb-1.5 block text-sm font-medium">
+                Service (catégorie de maladie)
               </label>
-              <div className="flex flex-wrap items-center gap-4 sm:gap-5">
-                {Object.entries(calendarsEvents).map(([key, value]) => (
-                  <div key={key} className="n-chk">
-                    <div
-                      className={`form-check form-check-${value} form-check-inline`}
-                    >
-                      <label
-                        className="flex items-center text-sm form-check-label"
-                        htmlFor={`modal${key}`}
-                      >
-                        <span className="relative">
-                          <input
-                            className="sr-only form-check-input"
-                            type="radio"
-                            name="event-level"
-                            value={key}
-                            id={`modal${key}`}
-                            checked={eventLevel === key}
-                            onChange={() => setEventLevel(key)}
-                          />
-                          <span className="flex items-center justify-center w-5 h-5 mr-2 border border-gray-300 rounded-full box dark:border-gray-700">
-                            <span
-                              className={`h-2 w-2 rounded-full bg-white ${
-                                eventLevel === key ? "block" : "hidden"
-                              }`}  
-                            ></span>
-                          </span>
-                        </span>
-                        {key}
-                      </label>
-                    </div>
-                  </div>
+              <select
+                value={eventService}
+                onChange={(e) => setEventService(e.target.value)}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              >
+               
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.name}>
+                    {cat.name}
+                  </option>
                 ))}
-              </div>
+              </select>
             </div>
 
-            <div className="mt-6">
-              <label className="mb-1.5 block text-sm font-medium ">
-              Date de début
-              </label>
-              <div className="relative">
-                <input
-                  id="event-start-date"
-                  type="date"
-                  value={eventStartDate}
-                  onChange={(e) => setEventStartDate(e.target.value)}
-                  className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-                />
-              </div>
+            {/* Date */}
+            <div className="mb-6">
+              <label className="mb-1.5 block text-sm font-medium">Date</label>
+              <input
+                type="date"
+                value={eventDate}
+                onChange={(e) => setEventDate(e.target.value)}
+                className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+              />
             </div>
 
-            <div className="mt-6">
-              <label className="mb-1.5 block text-sm font-medium ">
-               Date de fin
-              </label>
-              <div className="relative">
+            {/* start / end / patients in a row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Heure de début</label>
                 <input
-                  id="event-end-date"
-                  type="date"
-                  value={eventEndDate}
-                  onChange={(e) => setEventEndDate(e.target.value)}
-                  className="dark:bg-dark-900 h-11 w-full appearance-none rounded-lg border border-gray-300 bg-transparent bg-none px-4 py-2.5 pl-4 pr-11 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
+                  type="time"
+                  value={eventStartTime}
+                  onChange={(e) => setEventStartTime(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
                 />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Heure de fin</label>
+                <input
+                  type="time"
+                  value={eventEndTime}
+                  onChange={(e) => setEventEndTime(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium">Patients max</label>
+                <select
+                  value={eventPatients}
+                  onChange={(e) => setEventPatients(Number(e.target.value))}
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-3 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
+                >
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
+
+          {/* Boutons */}
           <div className="flex items-center gap-3 mt-6 modal-footer sm:justify-end">
             <button
-              onClick={closeModal}
+              onClick={() => {
+                closeModal();
+                resetModalFields();
+              }}
               type="button"
-              className="flex w-full justify-center rounded-lg border border-gray-300 bg-black px-4 py-2.5 text-sm font-medium text-white  dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-black sm:w-auto"
+              className="flex w-full justify-center rounded-lg border border-gray-300 bg-black px-4 py-2.5 text-sm font-medium text-white dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-black sm:w-auto"
             >
-            Annuler
+              Annuler
             </button>
             <button
+          
+            disabled={!eventService || !eventEndTime || !eventDate || !eventStartTime || !eventPatients}
               onClick={handleAddOrUpdateEvent}
               type="button"
               className="btn btn-success btn-update-event flex w-full justify-center rounded-lg bg-[#08A3DC] px-4 py-2.5 text-sm font-medium text-white sm:w-auto"
@@ -263,19 +357,6 @@ const Calendar: React.FC = () => {
           </div>
         </div>
       </Modal>
-    </div>
-  );
-};
-
-const renderEventContent = (eventInfo: EventContentArg) => {
-  const colorClass = `fc-bg-${eventInfo.event.extendedProps.calendar.toLowerCase()}`;
-  return (
-    <div
-      className={`event-fc-color flex fc-event-main ${colorClass} p-1 rounded-sm`}
-    >
-      <div className="fc-daygrid-event-dot"></div>
-      <div className="fc-event-time">{eventInfo.timeText}</div>
-      <div className="fc-event-title">{eventInfo.event.title}</div>
     </div>
   );
 };
