@@ -3,6 +3,7 @@ import NextAuth from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { ZodError } from "zod"
 import { getUserFromDb, signInSchema } from "./lib/zod"
+import prisma from "./lib/db"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -53,10 +54,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
+    
     async signIn({ user}) {
       console.log("User signed in:", user)
       return true
-    }
-  },
+    },
+    
+    async jwt({ token, user }) {
+      // Si l'utilisateur est présent lors de la connexion, ajoutez son ID au token
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    // Le callback 'session' est exécuté après le 'jwt'
+    async session({ session, token,user }) {
+      // // Assurez-vous que le token et son ID existent
+      if (session.user && token.id) {
+        session.user.id = String(token.id);
+      }
+      return session;
+    },
+  // Vous devez également définir la stratégie de session comme 'jwt'
+
+  }
 })

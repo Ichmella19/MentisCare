@@ -5,6 +5,8 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { listCategories } from "@/app/admin/(others-pages)/categories/action";
+import frLocale from '@fullcalendar/core/locales/fr';
+import { DatesSetArg } from "@fullcalendar/core";
 
 import {
   EventInput,
@@ -15,6 +17,8 @@ import {
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal";
 import { toast } from "react-toastify";
+import { addCalendar, editCalendar, listCalendars } from "@/app/admin/(others-pages)/calendar/action";
+import { useSession } from "next-auth/react";
 
 
 /**
@@ -23,7 +27,7 @@ import { toast } from "react-toastify";
  */
 interface CalendarEvent extends EventInput {
   extendedProps?: {
-    service?: string;
+    service?: number;
     patients?: number;
     startTime?: string;
     endTime?: string;
@@ -32,10 +36,11 @@ interface CalendarEvent extends EventInput {
 }
 
 const Calendar: React.FC = () => {
+  const { data: session } = useSession()
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  const calendarRef = useRef<unknown>(null); 
+  const calendarRef = useRef<FullCalendar | null>(null); 
   const { isOpen, openModal, closeModal } = useModal();
 
 
@@ -43,11 +48,14 @@ const Calendar: React.FC = () => {
   const [categories, setCategories] = useState<{ id: string | number; name: string }[]>(
     []
   );
-  const [eventService, setEventService] = useState<string>("");
+  const [eventService, setEventService] = useState<number>(0);
   const [eventDate, setEventDate] = useState<string>(""); 
   const [eventStartTime, setEventStartTime] = useState<string>("");
   const [eventEndTime, setEventEndTime] = useState<string>(""); 
   const [eventPatients, setEventPatients] = useState<number>(1);
+
+  const [currentViewDates, setCurrentViewDates] = useState<{ start: Date | null, end: Date | null }>({ start: null, end: null });
+  
 
  useEffect(() => {
     const fetchCategories = async () => {
@@ -64,7 +72,46 @@ const Calendar: React.FC = () => {
       }
     };
     fetchCategories();
-  }, []);
+  }, [currentViewDates]);
+
+   const handleDatesSet = async (dateInfo: DatesSetArg) => {
+      // Convertir les dates en chaînes pour une comparaison facile
+      const newStart = dateInfo.start.toISOString();
+      const newEnd = dateInfo.end.toISOString();
+      
+      // Convertir l'état actuel pour la comparaison
+      const oldStart = currentViewDates.start ? currentViewDates.start.toISOString() : null;
+      const oldEnd = currentViewDates.end ? currentViewDates.end.toISOString() : null;
+  
+      // Vérifier si les dates ont réellement changé avant de mettre à jour l'état
+      if (newStart !== oldStart || newEnd !== oldEnd) {
+        const lists = await listCalendars(newStart,newEnd)
+        
+      setEvents(
+        lists.data!.map((item: any) => ({
+          id: item.id,
+          title: item.category?.name ?? "Service",
+          start: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureDebut),
+          end: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureFin),
+          allDay: false,
+          extendedProps: {
+            service: item.categoryId,
+            patients: item.quantity,
+            startTime: item.heureDebut,
+            endTime: item.heureFin,
+            date: item.date
+          },
+        }))
+      );
+
+      }else {
+         setCurrentViewDates({
+          start: null,
+          end: null,
+        });
+      }
+  
+    };
 
   // Quand l'utilisateur sélectionne une plage dans le calendrier
   const handleDateSelect = (selectInfo: DateSelectArg) => {
@@ -106,62 +153,82 @@ const Calendar: React.FC = () => {
   };
 
   // Ajout ou modification d'un événement
-  const handleAddOrUpdateEvent = () => {
+  const handleAddOrUpdateEvent = async () => {
      if (!eventService || !eventEndTime || !eventDate || !eventStartTime || !eventPatients) {
-    toast.error("Veuillez remplir tous les champs obligatoires.");
-    return;
-  }
+      console.log("Champs manquants :", { eventService, eventDate, eventStartTime, eventEndTime, eventPatients });
+      toast.error("Veuillez remplir tous les champs obligatoires.");
+      return;
+    }
 
   // ici tu continues normalement
-  console.log("Formulaire valide :", {
-    eventService,
-    eventDate,
-    eventStartTime,
-    eventEndTime,
-    eventPatients,
-  });
+  // console.log("Formulaire valide :", {
+  //   eventService,
+  //   eventDate,
+  //   eventStartTime,
+  //   eventEndTime,
+  //   eventPatients,
+  //   selectedEvent
+  // });
     // construire start et end en combinant date + heure si fournies
     const startIso = buildDateTimeIso(eventDate, eventStartTime);
     const endIso = buildDateTimeIso(eventDate, eventEndTime) || startIso;
 
     if (selectedEvent) {
-      // modifier
+      const update = await editCalendar(Number(selectedEvent.id), eventService, eventDate, eventStartTime, eventEndTime, eventPatients)
+
+      if(update.success){
+
+      const item = update.data!
       setEvents((prev) =>
         prev.map((ev) =>
-          ev.id === selectedEvent.id
+          (ev.id !== undefined && ev.id.toString() === (selectedEvent.id ?? "").toString())
             ? {
                 ...ev,
-                title: eventService || `Service`,
-                start: startIso,
-                end: endIso,
+                id: item.id.toString(),
+                title: item.category?.name ?? "Service",
+                start: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureDebut),
+                end: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureFin),
                 allDay: false,
                 extendedProps: {
-                  ...ev.extendedProps,
-                  service: eventService,
-                  patients: eventPatients,
-                  startTime: eventStartTime,
-                  endTime: eventEndTime,
-                },
+                  service: item.categoryId,
+                  patients: item.quantity,
+                  startTime: item.heureDebut,
+                  endTime: item.heureFin,
+                  date: item.date
+                }
               }
             : ev
         )
       );
+      console.log(events)
+      toast.success(update.message)
+      }else
+        toast.error(update.message)
+
+
     } else {
-      // ajouter
+      const add = await addCalendar(eventService,eventDate,eventStartTime,eventEndTime,eventPatients,session?.user?.id!)
+      const item = add.data!
+      if(add.success){
       const newEvent: CalendarEvent = {
-        id: Date.now().toString(),
-        title: eventService || "Service",
-        start: startIso,
-        end: endIso,
-        allDay: false,
-        extendedProps: {
-          service: eventService,
-          patients: eventPatients,
-          startTime: eventStartTime,
-          endTime: eventEndTime,
-        },
-      };
+         id: item.id.toString(),
+          title: item.category?.name ?? "Service",
+          start: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureDebut),
+          end: buildDateTimeIso(item.date.toISOString().split('T')[0], item.heureFin),
+          allDay: false,
+          extendedProps: {
+            service: item.categoryId,
+            patients: item.quantity,
+            startTime: item.heureDebut,
+            endTime: item.heureFin,
+            date: item.date
+          }
+        };
+      
       setEvents((prev) => [...prev, newEvent]);
+        toast.success(add.message)
+      }else
+        toast.error(add.message)
     }
 
     closeModal();
@@ -171,7 +238,7 @@ const Calendar: React.FC = () => {
   // Réinitialiser champs
   const resetModalFields = () => {
     setSelectedEvent(null);
-    setEventService("");
+    setEventService(0);
     setEventDate("");
     setEventStartTime("");
     setEventEndTime("");
@@ -196,21 +263,16 @@ const Calendar: React.FC = () => {
     return `${hh}:${mm}`;
   };
 
-  // rendu de l'événement (petit badge dans le calendrier)
   const renderEventContent = (eventInfo: EventContentArg) => {
-    const svc = (eventInfo.event.extendedProps?.service ??
-      eventInfo.event.title ??
-      "Service") as string;
-    const patients = eventInfo.event.extendedProps?.patients ?? null;
-    const timeText = eventInfo.timeText || "";
-
     return (
-      <div className="flex items-center gap-2 p-1">
-        <div className="text-xs font-semibold">{svc}</div>
-        <div className="text-xs opacity-70">{timeText}</div>
-        {patients ? (
-          <div className="ml-1 text-xs text-gray-600">({patients})</div>
-        ) : null}
+      <div
+        className={`event-fc-color fc-event-main fc-bg-primary p-1 rounded-sm w-25 `}
+      >
+        <div className="flex">
+          <div className="fc-daygrid-event-dot"></div>
+          <div className="fc-event-time">{eventInfo.timeText}</div>
+        </div>
+        <div className="fc-event-title">{eventInfo.event.title}</div>
       </div>
     );
   };
@@ -223,6 +285,7 @@ const Calendar: React.FC = () => {
       <div className="custom-calendar">
         <FullCalendar
           ref={calendarRef}
+         locale={frLocale}
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
           headerToolbar={{
@@ -230,6 +293,7 @@ const Calendar: React.FC = () => {
             center: "title",
             right: "dayGridMonth,timeGridWeek,timeGridDay",
           }}
+          datesSet={handleDatesSet}
           events={events}
           selectable={true}
           select={(info: DateSelectArg) => handleDateSelect(info)}
@@ -271,12 +335,12 @@ const Calendar: React.FC = () => {
               </label>
               <select
                 value={eventService}
-                onChange={(e) => setEventService(e.target.value)}
+                onChange={(e) => setEventService(Number(e.target.value))}
                 className="h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90"
               >
-               
+               <option value="0">Choisir</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.name}>
+                  <option key={cat.id} value={cat.id}>
                     {cat.name}
                   </option>
                 ))}
@@ -347,7 +411,7 @@ const Calendar: React.FC = () => {
             </button>
             <button
           
-            disabled={!eventService || !eventEndTime || !eventDate || !eventStartTime || !eventPatients}
+            // disabled={eventService = '' ? true : false || eventEndTime = '' ? true : false || eventDate = ''? true : false || eventStartTime = '' ? true : false || eventPatients = '' ? true : false}
               onClick={handleAddOrUpdateEvent}
               type="button"
               className="btn btn-success btn-update-event flex w-full justify-center rounded-lg bg-[#08A3DC] px-4 py-2.5 text-sm font-medium text-white sm:w-auto"

@@ -4,9 +4,11 @@ import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { addPatient } from "@/app/admin/(others-pages)/patients/action";
+import { useSession } from "next-auth/react";
 
 
 export default function AddPatient({ onClose }: { onClose: () => void }) {
+  const { data: session } = useSession()
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       {/* Overlay */}
@@ -48,7 +50,7 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
             onSubmit={async (values, { setSubmitting, resetForm }) => {
                      try {
                         
-                       const result = await addPatient(values.name, values.email, values.phone , values.adresse ,  values.sexe , values.dateNaissance ,values.pays , "1" 
+                       const result = await addPatient(values.name, values.email, values.phone , values.adresse ,  values.sexe , values.dateNaissance ,values.pays , session?.user?.id! 
 
                        );
          
