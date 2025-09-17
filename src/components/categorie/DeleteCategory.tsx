@@ -7,7 +7,7 @@ export default function DeletePatient ({onClose, onSucces,}: {onClose: () => voi
           ></div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md md:max-w-lg p-4 sm:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
             <h3 className="text-lg font-bold mb-4 text-red-600">
-              Voulez-vous vraiment supprimer ce patient ?
+              Voulez-vous vraiment supprimer cette catégorie de maladie?
             </h3>
             <p className="mb-6">
               Cliquer sur <span className="font-semibold">Valider</span> pour

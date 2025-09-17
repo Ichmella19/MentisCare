@@ -1,37 +1,62 @@
 "use client";
-import { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddConsultation from "@/components/consultation/AddConsultation";
+ import DeleteConsultation from "@/components/consultation/DeleteConsultation";
+ 
+import { deleteConsultation } from "@/app/admin/(others-pages)/consultations/action";
+
+import { toast } from "react-toastify";
+import { FaTrash } from "react-icons/fa";
+import { Eye } from "lucide-react";
 
 type Consultation = {
   id: number;
   categorie: string;
   quantite: number;
-  stock: number;
   createdAt: string;
 };
 
-export default function TableConsultation() {
-  const [consultations, setConsultations] = useState<Consultation[]>([]);
+type Props = {
+  consultations: Consultation[];
+};
+
+export default function TableConsultation({ consultations }: Props) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   const [search, setSearch] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false); // ✅ ajouté pour gérer le modal
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Charger les données de Calendar
-  useEffect(() => {
-    const fetchConsultations = async () => {
-      try {
-        const res = await fetch("/api/consultations");
-        const data = await res.json();
-        setConsultations(data || []);
-      } catch (error) {
-        console.error("Erreur lors du fetch des consultations:", error);
-      }
-    };
-    fetchConsultations();
-  }, []);
-
+  // Filtrage par catégorie
   const filteredConsultations = consultations.filter((c) =>
     c.categorie?.toLowerCase().includes(search.toLowerCase())
   );
+  const handleDeleteClick = (consultation: Consultation) => {
+    setSelectedConsultation(consultation);
+    setIsDeleteModalOpen(true);
+  };
+  const handleDetailClick = (consultation: Consultation) => {
+    setSelectedConsultation(consultation);
+    setIsDeleteModalOpen(true);
+  }
+  const confirmDelete = async () => {
+  if (!selectedConsultation) return;
+
+  try {
+    const result = await deleteConsultation(selectedConsultation.id);
+
+    if (result.success) {
+      
+      toast.success(result.message);
+      setIsDeleteModalOpen(false);
+      setSelectedConsultation(null);
+    } else {
+      toast.error(result.message || "Erreur lors de la suppression.");
+    }
+  } catch (err) {
+    console.error(err);
+    toast.error("Erreur serveur");
+  }
+};
 
   return (
     <div
@@ -42,12 +67,7 @@ export default function TableConsultation() {
 
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
-          <button
-            className="px-4 py-2 bg-[#08A3DC] text-white rounded-md hover:bg-[#067aa6] w-full sm:w-auto"
-            onClick={() => setIsModalOpen(true)} // ✅ fonctionne maintenant
-          >
-            Ajouter une consultation
-          </button>
+         
         </div>
 
         {/* Barre de recherche */}
@@ -66,7 +86,6 @@ export default function TableConsultation() {
           <table className="w-full border-collapse text-sm md:text-base">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-700 text-left">
-            
                 <th className="p-3">Catégorie</th>
                 <th className="p-3">Quantité</th>
                 <th className="p-3">Stock</th>
@@ -76,20 +95,36 @@ export default function TableConsultation() {
             </thead>
             <tbody>
               {filteredConsultations.length > 0 ? (
-                filteredConsultations.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td className="p-3">{c.id}</td>
-                    <td className="p-3">{c.categorie}</td>
-                    <td className="p-3">{c.quantite}</td>
-                    <td className="p-3">{c.stock}</td>
-                    <td className="p-3">
-                      {new Date(c.createdAt).toLocaleDateString("fr-FR")}
-                    </td>
-                  </tr>
-                ))
+                filteredConsultations.map((consultation) => {
+                  const stock = 5 - consultation.quantite; // calcul du stock
+                  return (
+                    <tr
+                      key={consultation.id}
+                      className="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                      <td className="p-3">{consultation.categorie}</td>
+                      <td className="p-3">{consultation.quantite}</td>
+                      <td className="p-3">{stock}</td>
+                      <td className="p-3">
+                        {new Date(consultation.createdAt).toLocaleDateString("fr-FR")}
+                      </td>
+                      <td className="p-3 text-center flex gap-2 justify-center ">
+                                        
+                                          <button 
+                                          onClick={() => handleDetailClick(consultation)}
+                                          className="border-[#08A3DC] rounded-[5px]  border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] hover:text-white transition">
+                                          <Eye />
+                                         </button>
+                                         <button
+                                           onClick={() => handleDeleteClick(consultation)}
+                                           className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
+                                         >
+                                           <FaTrash />
+                                         </button>
+                                       </td>
+                    </tr>
+                  );
+                })
               ) : (
                 <tr>
                   <td colSpan={5} className="p-3 text-center text-gray-500">
@@ -101,23 +136,13 @@ export default function TableConsultation() {
           </table>
         </div>
       </div>
-
-      {/* Modal (placeholder pour l’instant) */}
-      {isModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-[400px]">
-            <h2 className="text-lg font-semibold mb-4">Ajouter une catégorie</h2>
-            {/* Ici tu mettras ton formulaire */}
-            <button
-              className="mt-4 px-4 py-2 bg-red-500 text-white rounded-md"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Fermer
-            </button>
-          </div>
-        </div>
-      )}
-        {/* Modal Ajout */}
+             {/* Modal Suppression */}
+                  {isDeleteModalOpen && selectedConsultation&& (
+                    <DeleteConsultation
+                      onClose={() => setIsDeleteModalOpen(false)} 
+                      onSucces={confirmDelete} 
+                    />
+                  )}
       {isModalOpen && <AddConsultation onClose={() => setIsModalOpen(false)} />}
     </div>
   );

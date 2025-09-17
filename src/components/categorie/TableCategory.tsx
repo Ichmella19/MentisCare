@@ -101,7 +101,7 @@ export default function TableCategory() {
     >
       {/* Header */}
       <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-       Patients
+    Catégories de maladies
       </h1>
      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">

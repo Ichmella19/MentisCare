@@ -39,7 +39,7 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
                        );
          
                        if (result.success) {
-                         toast.success("Patient ajouté avec succès !");
+                         toast.success("Catégorie de maladie ajouté avec succès !");
                          window.location.href = "/admin/categories"; // Actualiser la page pour refléter les changements
                          resetForm();
                          onClose();
