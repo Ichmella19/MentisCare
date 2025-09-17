@@ -19,7 +19,7 @@ type Category = {
     createdAt: string;
 };
 
-export default function TablePatient() {
+export default function TableCategory() {
   const [categories, setCategories] = useState<Category[]>([]);
  
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

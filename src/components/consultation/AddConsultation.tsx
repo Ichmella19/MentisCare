@@ -9,7 +9,7 @@ export default function AddConsultation({onClose}: {onClose: () => void}) {
   return <div>
     <div className="fixed inset-0 flex justify-center items-center p-2 sm:p-4 z-50">
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm mt-[40%]"
             onClick={() => onClose()}
           ></div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md md:max-w-lg p-4 sm:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
@@ -105,8 +105,8 @@ export default function AddConsultation({onClose}: {onClose: () => void}) {
       <div>
         <label className="block mb-1">Statut *</label>
         <Field as="select" name="statut" className="w-full p-2 border rounded">
-          <option value="Actif">Actif ✅</option>
-          <option value="Inactif">Inactif ❌</option>
+          <option value="Actif">Actif </option>
+          <option value="Inactif">Inactif </option>
         </Field>
         {errors.statut && touched.statut && (
           <p className="text-red-500 text-sm">{errors.statut}</p>
