@@ -2,7 +2,7 @@
 import prisma from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-const take = 2; // Nombre d'utilisateurs par page
+const take = 10; // Nombre d'utilisateurs par page
 
 export async function listUsers(page: number, search:string) {
     const skip = (page - 1) * take;

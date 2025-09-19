@@ -1,65 +1,82 @@
 "use client";
-import React, { useState } from "react";
+
+import React, { useEffect, useState } from "react";
  import DeleteConsultation from "@/components/consultation/DeleteConsultation";
- import { useRouter } from "next/navigation";
-import { deleteConsultation } from "@/app/admin/(others-pages)/consultations/action";
+import { deleteConsultation, listConsultations } from "@/app/admin/(others-pages)/consultations/action";
 
 import { toast } from "react-toastify";
 import { FaTrash } from "react-icons/fa";
 import { Eye } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Paginate } from "../Paginate";
 
 type Consultation = {
-  id: number;
-  categorie: string;
-  quantite: number;
+  category: any;
+  user: any;
+  id :number;
+  date:string;
+  heureDebut: string;
+  heureFin: string;
+  quantity: number;
+  stock: number;
   createdAt: string;
 };
 
-type Props = {
-  consultations: Consultation[];
-};
 
-export default function TableConsultation({ consultations }: Props) {
+export default function TableConsultation() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
+  const [calendars, setCalendars] = useState<Consultation[]>([]);
   const [search, setSearch] = useState("");
 
+  const searchParam = useSearchParams();
+  const page = parseInt(searchParam?.get("page") || "1");
+  const param = searchParam?.get("search") ?? "";
+  
+  const [totalPages, setTotalPages] = useState(1); // Pour la pagination
 
-  // Filtrage par catégorie
-  const filteredConsultations = consultations.filter((c) =>
-    c.categorie?.toLowerCase().includes(search.toLowerCase())
-  );
-  const handleDeleteClick = (consultation: Consultation) => {
-    setSelectedConsultation(consultation);
-    setIsDeleteModalOpen(true);
+
+ useEffect(() => {
+     const fetchConsultations = async () => {
+       try {
+         const result = await listConsultations(page,search);
+         if (result.success && result.data) {
+           setCalendars(
+             result.data.calendars.map((item: any) => ({
+               id: item.id,
+               category: item.category,
+               user: item.user ?? {}, // fallback to empty object if missing
+               date: item.date ? item.date.toString() : "",
+               heureDebut: item.heureDebut,
+               heureFin: item.heureFin,
+               quantity: item.quantity,
+               stock: item.stock,
+               createdAt: item.createdAt ? item.createdAt.toString() : "",
+             }))
+           );
+          setTotalPages(result.data.totalPages)
+
+         } else {
+           setCalendars([]);
+         }
+       } catch (error) {
+         console.error("Erreur lors du chargement des catégories :", error);
+         setCalendars([]);
+       }
+     };
+     fetchConsultations();
+   }, [search]);
+
+  const handleDeleteClick = (calendar: Consultation) => {
+   
   };
-const router = useRouter();
-  const handleDetailClick = (consultation: Consultation) => {
-  router.push(`/admin/consultations/${consultation.id}`);
-};
-  // const handleDetailClick = (consultation: Consultation) => {
-  //   setSelectedConsultation(consultation);
-  //   setIsDeleteModalOpen(true);
-  // }
+  const router = useRouter();
+  const handleDetailClick = (calendar: Consultation) => {
+    router.push(`/admin/consultations/${calendar.id}`);
+  };
+
   const confirmDelete = async () => {
-  if (!selectedConsultation) return;
-
-  try {
-    const result = await deleteConsultation(selectedConsultation.id);
-
-    if (result.success) {
-      
-      toast.success(result.message);
-      setIsDeleteModalOpen(false);
-      setSelectedConsultation(null);
-    } else {
-      toast.error(result.message || "Erreur lors de la suppression.");
-    }
-  } catch (err) {
-    console.error(err);
-    toast.error("Erreur serveur");
-  }
-};
+    
+  };
 
   return (
     <div
@@ -91,40 +108,38 @@ const router = useRouter();
               <tr className="bg-gray-100 dark:bg-gray-700 text-left">
                 <th className="p-3">Catégorie</th>
                 <th className="p-3">Quantité</th>
-                <th className="p-3">Stock</th>
+                <th className="p-3">Place Prise</th>
                 <th className="p-3">Date</th>
                 <th className="p-3">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {filteredConsultations.length > 0 ? (
-                filteredConsultations.map((consultation) => {
-                  const stock = 5 - consultation.quantite; // calcul du stock
+              {calendars.length > 0 ? (
+                calendars.map((calendar) => {
                   return (
                     <tr
-                      key={consultation.id}
+                      key={calendar.id}
                       className="border-b hover:bg-gray-50 dark:hover:bg-gray-700"
                     >
-                      <td className="p-3">{consultation.categorie}</td>
-                      <td className="p-3">{consultation.quantite}</td>
-                      <td className="p-3">{stock}</td>
+                      <td className="p-3">{calendar.category.name}</td>
+                      <td className="p-3">{calendar.quantity}</td>
+                      <td className="p-3">{calendar.stock}</td>
                       <td className="p-3">
-                        {new Date(consultation.createdAt).toLocaleDateString("fr-FR")}
+                        {new Date(calendar.createdAt).toLocaleDateString("fr-FR")}
                       </td>
-                      <td className="p-3 text-center flex gap-2 justify-center ">
-                                        
-                                          <button 
-                                          onClick={() => handleDetailClick(consultation)}
-                                          className="border-[#08A3DC] rounded-[5px]  border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] hover:text-white transition">
-                                          <Eye />
-                                         </button>
-                                         <button
-                                           onClick={() => handleDeleteClick(consultation)}
-                                           className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
-                                         >
-                                           <FaTrash />
-                                         </button>
-                                       </td>
+                      <td className="p-3 text-center flex gap-2 justify-center ">     
+                        <button 
+                        onClick={() => handleDetailClick(calendar)}
+                        className="border-[#08A3DC] rounded-[5px]  border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] hover:text-white transition">
+                        <Eye />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(calendar)}
+                          className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
+                        >
+                          <FaTrash />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })
@@ -138,15 +153,10 @@ const router = useRouter();
             </tbody>
           </table>
         </div>
-      </div>
-             {/* Modal Suppression */}
-                  {isDeleteModalOpen && selectedConsultation&& (
-                    <DeleteConsultation
-                      onClose={() => setIsDeleteModalOpen(false)} 
-                      onSucces={confirmDelete} 
-                    />
-                  )}
-   
+          { totalPages === 1 ? ''
+              :<Paginate pages ={totalPages} currentPage={page} path="/admin/consultations" param={param} />
+          }
+      </div>   
     </div>
   );
 }

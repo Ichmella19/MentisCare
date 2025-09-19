@@ -1,33 +1,41 @@
 "use server";
+
+import { auth } from "@/auth";
 import  prisma  from "@/lib/db";
-import { NextResponse } from "next/server";
+const take = 10;
 
-
-export async function listConsultations() {
+export async function listConsultations(page: number, search:string) {
   try {
     // On va chercher les créneaux dans la table calendar
+    const session = await auth()
+    const skip = (page - 1) * take;
     const calendars = await prisma.calendar.findMany({
+      where:{
+        userId: session?.user?.id,
+        OR:[
+                {category:{
+                  name:{contains:search.toLowerCase(), mode: 'insensitive'}}
+                
+                },
+            ]
+      },
       include: { category: true },
       orderBy: { date: "desc" },
+      
+        take,
+        skip,
     });
 
-    const consultations = calendars.map((c) => {
-      // Stock = nombre de places max - réservations (à adapter si tu gères une table reservations)
-      const stock = c.quantity - (c.reserved ?? 0);
+    
+    const totalUsers = await prisma.calendar.count();
+    const totalPages = Math.ceil(totalUsers / take);
 
-      return {
-        id: c.id,
-        categorie: c.category?.name ?? "Inconnu",
-        quantite: c.quantity,
-        stock,
-        createdAt: c.date,
-      };
-    });
-
-    return NextResponse.json(consultations);
-  } catch (error) {
-    console.error("Erreur API consultations:", error);
-    return NextResponse.json({ error: "Erreur lors du fetch" }, { status: 500 });
+    return { success: true, data: {calendars,totalPages} };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+            return { success: false, message: error.message || "Erreur lors du chargement des catégories." };
+        }
+        return { success: false, message: "Erreur lors du chargement des catégories." };
   }
 }
 export async function deleteConsultation(id: number) {

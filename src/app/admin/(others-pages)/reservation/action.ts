@@ -15,7 +15,7 @@ export async function listReservations() {
       id: c.id,
       category: c.category,
       quantity: c.quantity,
-      stock: c.quantity - (c.reserved ?? 0),
+      stock: c.quantity,
       date: c.date,
       heureDebut: c.heureDebut,
       heureFin: c.heureFin,

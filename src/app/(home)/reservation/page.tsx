@@ -1,4 +1,6 @@
 "use client";
+import Header from "@/components/(home)/header/header";
+import { motion } from "framer-motion";
 import React from "react";
 
 
@@ -20,6 +22,22 @@ type Props = {
 export default function ReservationPage({ reservations = [] }: Props) {
     console.log("Reservations reçues:", reservations);
   return (
+    <div className= {`min-h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white`}style={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <main className="flex-1">
+
+       <Header />
+          <div className="bg-[#2E86AB] text-white py-[120px] px-6 md:px-24 text-center">
+          <motion.h1 initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="text-5xl font-extrabold mb-6">MentisCare</motion.h1>
+            <p className="text-xl font-medium mx-auto max-w-3xl">
+              Une initiative humaine et technologique pour redonner de l'espoir à ceux que la société oublie trop souvent.
+            </p>
+          </div>
+    
+
+     
+        <section className= {`py-16 px-6 lg:px-20`} >
+          
+    
     <div className="max-w-7xl mx-auto px-6 py-10">
       
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -64,6 +82,9 @@ export default function ReservationPage({ reservations = [] }: Props) {
           ))}
         </div>
   
+    </div>
+        </section>
+      </main>
     </div>
   );
 }
