@@ -42,5 +42,20 @@ export async function deleteConsultation(id: number) {
     return { success: false, message: "Erreur lors de la suppression." };
   }
 }
+// Récupérer les réservations liées à une consultation
+export async function listReservationsByConsultation(calendarId: number) {
+  try {
+    const reservations = await prisma.reservation.findMany({
+      where: { calendarId: calendarId },
+     // si tu veux aussi afficher l’utilisateur
+      orderBy: { createdAt: "asc" },
+    });
+    return reservations;
+  } catch (err) {
+    console.error(err);
+    return [];
+  }
+}
+
 
 

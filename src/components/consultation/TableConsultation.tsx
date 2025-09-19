@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import AddConsultation from "@/components/consultation/AddConsultation";
  import DeleteConsultation from "@/components/consultation/DeleteConsultation";
- 
+ import { useRouter } from "next/navigation";
 import { deleteConsultation } from "@/app/admin/(others-pages)/consultations/action";
 
 import { toast } from "react-toastify";
@@ -24,7 +23,7 @@ export default function TableConsultation({ consultations }: Props) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
   const [search, setSearch] = useState("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+
 
   // Filtrage par catégorie
   const filteredConsultations = consultations.filter((c) =>
@@ -34,10 +33,14 @@ export default function TableConsultation({ consultations }: Props) {
     setSelectedConsultation(consultation);
     setIsDeleteModalOpen(true);
   };
+const router = useRouter();
   const handleDetailClick = (consultation: Consultation) => {
-    setSelectedConsultation(consultation);
-    setIsDeleteModalOpen(true);
-  }
+  router.push(`/admin/consultations/${consultation.id}`);
+};
+  // const handleDetailClick = (consultation: Consultation) => {
+  //   setSelectedConsultation(consultation);
+  //   setIsDeleteModalOpen(true);
+  // }
   const confirmDelete = async () => {
   if (!selectedConsultation) return;
 
@@ -143,7 +146,7 @@ export default function TableConsultation({ consultations }: Props) {
                       onSucces={confirmDelete} 
                     />
                   )}
-      {isModalOpen && <AddConsultation onClose={() => setIsModalOpen(false)} />}
+   
     </div>
   );
 }

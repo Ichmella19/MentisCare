@@ -18,9 +18,9 @@ const Header: React.FC = () => {
   const navLinks = [
     { label: "Accueil", href: "/" },
     { label: "À Propos", href: "/aboutUs" },
-    { label: "Fonctionnalités", href: "/fonctions" },
     { label: "Réalisations", href: "/portfolio" },
     { label: "Contact", href: "/contact" },
+       { label: "Réservation", href: "/reservation" },
   ];
 
   return (
@@ -68,10 +68,14 @@ const Header: React.FC = () => {
         </nav>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
+          {/* Bouton séparé "Prendre rendez-vous" */}
+         
+
+          {/* Connexion/Dashboard + Dons */}
           <div className="flex rounded-lg overflow-hidden shadow border border-[#08A3DC]">
             <button
-              className="bg-[#08A3DC] text-white px-5 py-2 hover:bg-[#0b91c6] transition duration-200"
+              className="bg-[#08A3DC]  text-white px-5 py-2 hover:bg-[#0b91c6] transition duration-200"
               onClick={() => router.push(session?.user ? "/admin/dashboard" : "/signin")}
             >
               {session?.user ? "Dashboard" : "Se connecter"}
@@ -130,6 +134,9 @@ const Header: React.FC = () => {
             );
           })}
         </ul>
+
+        {/* Bouton "Prendre rendez-vous" en bas du menu mobile */}
+       
       </div>
     </header>
   );
