@@ -1,12 +1,15 @@
 "use server";
 
+import { auth } from "@/auth";
 import prisma from "@/lib/db";
 import { connect } from "http2";
 import { ca } from "zod/v4/locales";
 
 export async function listCalendars(startDate?: string, endDate?: string) {
+
+  const session = await auth();
   try {
-    const whereCondition: { date?: any } = {};
+    const whereCondition: { date?: any, userId: string } = { userId: session?.user?.id ?? "" };
 
     // Gérer le cas où startDate et endDate sont définis
     if (startDate && endDate) {
@@ -25,6 +28,7 @@ export async function listCalendars(startDate?: string, endDate?: string) {
         lte: new Date(endDate),
       };
     }
+
 
     const calendars = await prisma.calendar.findMany({
       where: whereCondition,

@@ -3,7 +3,7 @@ import { FaEdit, FaTrash } from "react-icons/fa";
 import { useState, useEffect } from "react";
 import { listPatients } from "@/app/admin/(others-pages)/patients/action";
 import { Eye } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { toast } from "react-toastify";
 import { deletePatient } from "@/app/admin/(others-pages)/patients/action";
@@ -11,6 +11,7 @@ import AddPatient from "@/components/patient/AddPatient";
 import DeletePatient from "@/components/patient/DeletePatient";
 import EditPatient from "@/components/patient/EditPatient";
 import DetailPatient from "@/components/patient/DetailPatient";
+import { Paginate } from "../Paginate";
 
 // Définition du type Patient
 type Patient = {
@@ -33,16 +34,23 @@ export default function TablePatient() {
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  const searchParam = useSearchParams();
+  const page = parseInt(searchParam?.get("page") || "1");
+  const param = searchParam?.get("search") ?? "";
+  
+  const [totalPages, setTotalPages] = useState(1); // Pour la pagination
+  
   const router = useRouter(); 
   useEffect(() => {
     async function loadPatients() {
       try {
-        const result = await listPatients();
+        const result = await listPatients(page, search);
 
         if (result.success && result.data) {
           setPatients(
              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            result.data.map((p: any) => ({
+            result.data.patients.map((p: any) => ({
               id: p.id,
               name: p.name ?? "",
               email: p.email ?? "",
@@ -54,6 +62,8 @@ export default function TablePatient() {
               pays: p.pays ?? "",
             }))
           );
+          
+          setTotalPages(result.data.totalPages)
         } else {
           setPatients([]);
         }
@@ -102,12 +112,6 @@ export default function TablePatient() {
   }
 };
 
-  const filteredPatients = patients.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.email.toLowerCase().includes(search.toLowerCase())
-  );
-
   return (
     <div
       className="p-4 md:p-6 bg-white text-black dark:bg-black dark:text-white min-h-screen"
@@ -154,8 +158,8 @@ export default function TablePatient() {
             </tr>
           </thead>
           <tbody>
-            {filteredPatients.length > 0 ? (
-              filteredPatients.map((patient) => (
+            {patients.length > 0 ? (
+              patients.map((patient) => (
                 <tr
                   key={patient.id}
                   className="border-t hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -211,6 +215,12 @@ export default function TablePatient() {
             )}
           </tbody>
         </table>
+      </div>
+      
+      <div>
+          { totalPages === 1 ? ''
+              :<Paginate pages ={totalPages} currentPage={page} path="/admin/patients" param={param} />
+          }
       </div>
       </div>
       {/* Modal Ajout */}

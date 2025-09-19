@@ -38,6 +38,7 @@ export async function listConsultations(page: number, search:string) {
         return { success: false, message: "Erreur lors du chargement des catégories." };
   }
 }
+
 export async function deleteConsultation(id: number) {
   try {
     // Suppression du créneau dans la table calendar
