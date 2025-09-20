@@ -37,13 +37,13 @@ export default function Footer() {
           <ul className={` text-[16px]`}>
             {[
               { label: "Accueil", path: "/" },
-              { label: "Fonctionnalités", path: "/fonctionnalites" },
+                { label: "À propos", path: "/about" },
               { label: "Contact", path: "/contact" },
-              { label: "Réalisations", path: "/realisations" },
-              { label: "À propos", path: "/about" },
+              { label: "Réservations", path: "/reservation" },
+            
             ].map(({ label, path }) => (
               <li key={label} className="mb-2">
-                <a href={path} className="hover:text-blue-500">{label}</a>
+                <a href={path} className="hover:text-[#08A3DC]">{label}</a>
               </li>
             ))}
           </ul>

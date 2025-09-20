@@ -11,7 +11,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Paginate } from "../Paginate";
 
 type Consultation = {
+               
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   category: any;
+               // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
   id :number;
   date:string;
@@ -27,6 +30,8 @@ export default function TableConsultation() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [calendars, setCalendars] = useState<Consultation[]>([]);
   const [search, setSearch] = useState("");
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
+  
 
   const searchParam = useSearchParams();
   const page = parseInt(searchParam?.get("page") || "1");
@@ -41,6 +46,9 @@ export default function TableConsultation() {
          const result = await listConsultations(page,search);
          if (result.success && result.data) {
            setCalendars(
+                         
+            
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
              result.data.calendars.map((item: any) => ({
                id: item.id,
                category: item.category,
@@ -66,16 +74,36 @@ export default function TableConsultation() {
      fetchConsultations();
    }, [search]);
 
-  const handleDeleteClick = (calendar: Consultation) => {
-   
+  const handleDeleteClick = (consultation: Consultation) => {
+    setSelectedConsultation(consultation);
+    setIsDeleteModalOpen(true);
   };
   const router = useRouter();
   const handleDetailClick = (calendar: Consultation) => {
     router.push(`/admin/consultations/${calendar.id}`);
   };
 
-  const confirmDelete = async () => {
-    
+   const confirmDelete = async () => {
+    if (!selectedConsultation) return;
+  
+    try {
+      const result = await deleteConsultation(selectedConsultation.id); 
+  
+      if (result.success) {
+        // Supprime l'utilisateur du state
+       
+        toast.success(result.message);
+        setIsDeleteModalOpen(false);
+        setSelectedConsultation(null);
+        // router.refresh(); // Actualiser la page pour refléter les changements
+        router.push('/admin/consultations');
+      } else {
+        toast.error(result.message || "Erreur lors de la suppression.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur serveur");
+    }
   };
 
   return (
@@ -157,6 +185,13 @@ export default function TableConsultation() {
               :<Paginate pages ={totalPages} currentPage={page} path="/admin/consultations" param={param} />
           }
       </div>   
+        {/* Modal Suppression */}
+            {isDeleteModalOpen && selectedConsultation && (
+              <DeleteConsultation 
+                onClose={() => setIsDeleteModalOpen(false)} 
+                onSucces={confirmDelete} 
+              />
+            )}
     </div>
   );
 }

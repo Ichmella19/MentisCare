@@ -108,21 +108,21 @@ const ContactForm: React.FC=() => {
                   <MapPin className="text-[#08A3DC]" />
                   <div>
                     <strong >Adresse</strong>
-                    <p className="text-white dark:text-black">Abomey-Calavi, Kpota</p>
+                    <p className="text-black dark:text-white">Abomey-Calavi, Tokan</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="text-[#08A3DC]" />
                   <div>
                     <strong >Email</strong>
-                    <p className="text-white dark:text-black">contact@mentiscare.tech</p>
+                    <p className="text-black dark:text-white">contact@mentiscare.tech</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <Clock className="text-[#08A3DC]" />
                   <div>
                     <strong >Horaires</strong>
-                    <p className="text-white dark:text-black">Lun - Sam : 8h - 18h</p>
+                    <p className="text-black dark:text-white">Lun - Sam : 8h - 18h</p>
                   </div>
                 </div>
               </div>
@@ -130,8 +130,8 @@ const ContactForm: React.FC=() => {
 
             <div className={`rounded-lg shadow-md p-6 `}>
               <h3 className={`text-xl font-bold mb-2 `}>Support client</h3>
-              <p className="text-white dark:text-black mb-2">Notre équipe est disponible pour répondre à vos préoccupations.</p>
-              <ul className="text-sm space-y-1 text-white dark:text-black">
+              <p className="text-black dark:text-white mb-2">Notre équipe est disponible pour répondre à vos préoccupations.</p>
+              <ul className="text-sm space-y-1 text-black dark:text-white">
                 <li><strong>Temps de réponse :</strong> 2–4 heures</li>
                 <li><strong>Support téléphone :</strong> Lun–Sam 8h–18h</li>
                 <li><strong>Support email :</strong> 24h/24</li>

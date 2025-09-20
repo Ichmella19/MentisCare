@@ -90,3 +90,19 @@ export async function makeReservation(
     return { success: false, message: "Erreur lors de la réservation." };
   }
 }
+export async function listReservationsByCalendar(calendarId: number) {
+  try {
+    const reservations = await prisma.reservation.findMany({
+      where: { calendarId },
+      // pas besoin d'include user ou category ici
+      orderBy: { createdAt: "desc" }, // optionnel pour trier les plus récentes
+    });
+
+    return { success: true, data: reservations };
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return { success: false, message: error.message };
+    }
+    return { success: false, message: "Erreur lors de la récupération des réservations." };
+  }
+}

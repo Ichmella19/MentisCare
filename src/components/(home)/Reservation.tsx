@@ -5,6 +5,10 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Header from "./header/header";
 import { Paginate } from "../Paginate";
+import ModalReservation from "@/components/(home)/ModalReservation";
+// import { useRouter } from "next/navigation";
+// import { makeReservation } from "@/app/(home)/reservation/action"; // ✅ vérifie le chemin
+
 
 type Reservation = {
   category: any;
@@ -22,11 +26,13 @@ type Props = {
   reservations: Reservation[]; // <-- on rend la prop optionnelle
 };
 
-export default function ReservationPage() {
+export default function ReservationPage( {}: Props) {
     
       const [calendars, setCalendars] = useState<Reservation[]>([]);
       const [search, setSearch] = useState("");
-    
+      const [isModalOpen, setIsModalOpen] = useState(false);
+    //  const router = useRouter();
+  // const [selectedReservation, setSelectedReservation] = useState<Partial<Reservation>>({});
       const searchParam = useSearchParams();
       const page = parseInt(searchParam?.get("page") || "1");
       const param = searchParam?.get("search") ?? "";
@@ -115,9 +121,7 @@ export default function ReservationPage() {
                 </div>
 
                 <button
-                    onClick={() =>
-                    alert(`Rendez-vous réservé pour ${r.category?.name}`)
-                    }
+                        onClick={() => setIsModalOpen(true)}
                     className="mt-4 bg-[#08A3DC] text-white px-4 py-2 rounded-lg hover:bg-[#0b91c6] transition duration-200"
                 >
                     Prendre rendez-vous
@@ -132,6 +136,15 @@ export default function ReservationPage() {
             </div>
     
         </div>
-    </div>  
+         {/* Modal Ajout */}
+<ModalReservation
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        initialData={{}} // tu peux mettre des valeurs par défaut si tu veux pré-remplir
+        onSubmit={(values) => {
+          // Gère la soumission du formulaire ici
+          console.log("Form submitted with values:", values);
+        }}
+      />    </div>  
   );
 }
