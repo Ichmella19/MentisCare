@@ -178,6 +178,7 @@ model Reservation {
   phone       String
   description String
   adresse     String
+  status      Boolean @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   calendar    Calendar @relation(fields: [calendarId], references: [id])

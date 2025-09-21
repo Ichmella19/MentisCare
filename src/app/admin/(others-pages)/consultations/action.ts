@@ -66,5 +66,19 @@ export async function listReservationsByConsultation(calendarId: number) {
   }
 }
 
+export async function validateConsultation(id: number) {
+  try {
+    // Validation du créneau dans la table calendar
+    await prisma.reservation.update({
+      where: { id },
+      data: { status: true },
+    });
+    return { success: true, message: "Consultation validée avec succès." };
+  } catch (error) {
+    console.error("Erreur lors de la validation de la consultation :", error);
+    return { success: false, message: "Erreur lors de la validation." };
+  }
+}
+
 
 

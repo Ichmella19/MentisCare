@@ -1,11 +1,13 @@
 "use client";
-import { listReservations } from "@/app/(home)/reservation/action";
+import { listReservations, makeReservation } from "@/app/(home)/reservation/action";
 import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Header from "./header/header";
 import { Paginate } from "../Paginate";
 import ModalReservation from "@/components/(home)/ModalReservation";
+import { set } from "zod";
+import { toast } from "react-toastify";
 // import { useRouter } from "next/navigation";
 // import { makeReservation } from "@/app/(home)/reservation/action"; // ✅ vérifie le chemin
 
@@ -22,12 +24,10 @@ type Reservation = {
   createdAt: string;
 };
 
-type Props = {
-  reservations: Reservation[]; // <-- on rend la prop optionnelle
-};
 
-export default function ReservationPage( {}: Props) {
+export default function ReservationPage() {
     
+    const [selectedConsultation, setSelectedConsultation] = useState<Reservation | null>(null);
       const [calendars, setCalendars] = useState<Reservation[]>([]);
       const [search, setSearch] = useState("");
       const [isModalOpen, setIsModalOpen] = useState(false);
@@ -105,9 +105,6 @@ export default function ReservationPage( {}: Props) {
                     {r.category?.name ?? "Inconnu"}
                     </h2>
                     <p className="text-gray-700 dark:text-gray-300">
-                    <span className="font-semibold">Quantité :</span> {r.quantity}
-                    </p>
-                    <p className="text-gray-700 dark:text-gray-300">
                     <span className="font-semibold">Heure :</span> {r.heureDebut} -{" "}
                     {r.heureFin}
                     </p>
@@ -121,7 +118,10 @@ export default function ReservationPage( {}: Props) {
                 </div>
 
                 <button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            setIsModalOpen(true);
+                            setSelectedConsultation(r);
+                        }}
                     className="mt-4 bg-[#08A3DC] text-white px-4 py-2 rounded-lg hover:bg-[#0b91c6] transition duration-200"
                 >
                     Prendre rendez-vous
@@ -137,14 +137,20 @@ export default function ReservationPage( {}: Props) {
     
         </div>
          {/* Modal Ajout */}
-<ModalReservation
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        initialData={{}} // tu peux mettre des valeurs par défaut si tu veux pré-remplir
-        onSubmit={(values) => {
-          // Gère la soumission du formulaire ici
-          console.log("Form submitted with values:", values);
-        }}
-      />    </div>  
+        <ModalReservation
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            initialData={{}} // tu peux mettre des valeurs par défaut si tu veux pré-remplir
+            onSubmit={async (values) => {
+            // Gère la soumission du formulaire ici
+            // console.log("Form submitted with values:", selectedConsultation?.id!,values);
+            const result = await makeReservation(selectedConsultation?.id!, values.nom, values.email, values.phone, values.description, values.adresse);
+            if (result.success) {
+                toast.success("Réservation réussie !");
+            } else {
+                toast.error("Erreur lors de la réservation : " + result.message);
+            }
+            }}
+        />    </div>  
   );
 }
