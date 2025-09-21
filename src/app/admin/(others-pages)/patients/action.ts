@@ -106,4 +106,25 @@ export async function editPatient(
     });
     return { success: true, message: "Patient mis à jour avec succès." };
 }
+// action.ts
+
+
+export async function listDoctors() {
+  try {
+    const users = await prisma.user.findMany({
+      where: { role: "USER" }, // ou "doctor" si tu as un rôle spécifique
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+
+    return { success: true, data: users };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    return { success: false, message: error.message };
+  }
+}
+
 
