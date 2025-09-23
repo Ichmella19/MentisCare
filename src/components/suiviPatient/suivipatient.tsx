@@ -19,15 +19,8 @@ type Suivi = {
   fichier: string;
   createdAt: string;
   updatedAt: string;
-  patient: {
-    id: number;
-    name: string | null;
-  };
-  user: {
-    id: string;
-    name: string;
-    email: string;
-  };
+  patient: any
+  user: any
 };
 
 export default function SuiviPatientPage() {
@@ -45,7 +38,18 @@ export default function SuiviPatientPage() {
       try {
         const result = await listSuivisByPatient(patientId);
         if (result.success) {
-          setSuivis(result.data ?? []); 
+          setSuivis(
+            (result.data ?? []).map((suivi: any) => ({
+              ...suivi,
+              createdAt: suivi.createdAt instanceof Date ? suivi.createdAt.toISOString() : suivi.createdAt,
+              updatedAt: suivi.updatedAt instanceof Date ? suivi.updatedAt.toISOString() : suivi.updatedAt,
+              patient: {
+                ...suivi.patient,
+                createdAt: suivi.patient.createdAt instanceof Date ? suivi.patient.createdAt.toISOString() : suivi.patient.createdAt,
+                updatedAt: suivi.patient.updatedAt instanceof Date ? suivi.patient.updatedAt.toISOString() : suivi.patient.updatedAt,
+              },
+            }))
+          );
         } else {
           setSuivis([]);
         }
@@ -102,8 +106,8 @@ export default function SuiviPatientPage() {
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-700">
               <th className="px-4 py-2 text-left">Médecin</th>
-              <th className="px-4 py-2 text-left">Description</th>
               <th className="px-4 py-2 text-left">Date de création</th>
+              <th className="px-4 py-2 text-left">Dernière de modifiaction</th>
               <th className="px-4 py-2 text-center">Actions</th>
             </tr>
           </thead>
@@ -111,8 +115,8 @@ export default function SuiviPatientPage() {
             {suivis.map((s) => (
               <tr key={s.id} className="border-t border-gray-200 dark:border-gray-700">
                 <td className="px-4 py-2">{s.user?.name ?? "—"}</td>
-                <td className="px-4 py-2">{s.description}</td>
                 <td className="px-4 py-2">{new Date(s.createdAt).toLocaleDateString()}</td>
+                <td className="px-4 py-2">{new Date(s.updatedAt).toLocaleDateString()}</td>
                 <td className="p-3 text-center flex gap-2 justify-center flex-wrap">
                       <button 
                         onClick={() => handleDetailClick(s)}

@@ -2,6 +2,7 @@
 
 import prisma from "@/lib/db";
 import { genererMatriculeUnique } from "@/lib/zod";
+import { ca } from "zod/v4/locales";
  const take = 12
 
 export async function listPatients(page:number, search:string) {
@@ -19,6 +20,7 @@ export async function listPatients(page:number, search:string) {
         ]
       },
         orderBy: { createdAt: 'desc' },
+        include: { user: true },
         take,
         skip
     });
@@ -124,4 +126,31 @@ export async function listDoctors() {
   }
 }
 
+export async function assignDoctorToPatient(patientId: number, doctorId: string) {
+  try {
+    // Vérifier si le patient existe
+    const patient = await prisma.patient.findUnique({
+      where: { id: patientId },
+    });
+    if (!patient) {
+      return { success: false, message: "Patient non trouvé." };
+    }
+    // Vérifier si le médecin existe
+    const doctor = await prisma.user.findUnique({
+      where: { id: doctorId, role: "USER" }, // ou "doctor" si tu as un rôle spécifique
+    });
+    if (!doctor) {
+      return { success: false, message: "Médecin non trouvé." };
+    } 
 
+    await prisma.patient.update({
+      where: { id: patientId },
+      data: { user: { connect: { id: doctorId } } },
+    });
+    return { success: true, message: "Médecin assigné au patient avec succès." };
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+  }catch (error: any) {
+    return { success: false, message: error.message || "Erreur lors de l'assignation du médecin au patient." };
+  }
+}

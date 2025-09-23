@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { listDoctors } from "@/app/admin/(others-pages)/patients/action";
+import { assignDoctorToPatient, listDoctors } from "@/app/admin/(others-pages)/patients/action";
+import { toast } from "react-toastify";
 
 type Doctor = {
   id: string;
@@ -38,9 +39,14 @@ export default function AssignDoctorModal({ patientId, onClose }: AssignDoctorMo
 
   const handleAssign = async () => {
     if (!selectedDoctor) return;
-
+    const result = await assignDoctorToPatient(patientId, selectedDoctor);
+    if (result.success) {
+      toast.success(result.message);
+    } else {
+      toast.error(result.message);
+    }
     // TODO : appelle une API pour assigner le médecin
-    console.log("Assigner médecin", selectedDoctor, "au patient", patientId);
+    // console.log("Assigner médecin", selectedDoctor, "au patient", patientId);
 
     onClose();
   };

@@ -14,6 +14,7 @@ type Patient = {
   pays: string;
   sexe: string;
   dateNaissance: string ;
+  user: any;
 };
 
 type DetailPatientProps = {
@@ -96,6 +97,13 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
               <h3 className="text-sm font-medium text-gray-500">Pays</h3>
               <p className="text-black dark:text-white">
                 {patient.pays}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-500">Personnel traitant</h3>
+              <p className="text-black dark:text-white">
+                {patient.user ? patient.user.name : "Non assigné"}
               </p>
             </div>
           </div>

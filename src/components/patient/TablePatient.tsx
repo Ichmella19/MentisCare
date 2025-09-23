@@ -23,6 +23,7 @@ type Patient = {
   pays: string;
   sexe: string;
   dateNaissance: string;
+  user: any;
  
 };
 
@@ -58,11 +59,11 @@ export default function TablePatient() {
               adresse: p.adresse ?? "",
               sexe: p.sexe ?? "",
               dateNaissance: p.dateNaissance ?? "",
-               
+              user: p.user ?? null,
               pays: p.pays ?? "",
             }))
           );
-          
+          console.log(result.data.patients)
           setTotalPages(result.data.totalPages)
         } else {
           setPatients([]);

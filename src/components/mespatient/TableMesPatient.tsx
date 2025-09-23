@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { listPatients } from "@/app/admin/(others-pages)/patients/action";
 import { Eye } from "lucide-react";
 import {useRouter, useSearchParams } from "next/navigation";
 import { Paginate } from "../Paginate";
+import { MyPatients } from "@/app/admin/(others-pages)/mespatients/action";
 
 // Définition du type Patient
 type Patient = {
@@ -33,7 +33,7 @@ export default function TablePatient() {
   useEffect(() => {
     async function loadPatients() {
       try {
-        const result = await listPatients(page, search);
+        const result = await MyPatients(page, search);
 
         if (result.success && result.data) {
           setPatients(

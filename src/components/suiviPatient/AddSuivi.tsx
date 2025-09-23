@@ -6,6 +6,9 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { createSuivi } from "@/app/admin/(others-pages)/suiviPatient/action";
 
+import ReactQuill from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
 // Props pour ouvrir/fermer le modal et récupérer le patientId
 type AddSuiviProps = {
   patientId: number;
@@ -16,11 +19,13 @@ type AddSuiviProps = {
 
 export default function AddSuivi({ patientId, initialDescription = "", onClose, onSuccess }: AddSuiviProps) {
   const [file, setFile] = useState<File | null>(null);
+  const [value, setValue] = useState('');
+  const [prescript, setPrescript] = useState('');
 
   // Validation Yup
   const validationSchema = Yup.object({
-    description: Yup.string().required("La description est obligatoire"),
-    prescription: Yup.string().required("La prescription est obligatoire"),
+    // description: Yup.string().required("La description est obligatoire"),
+    // prescription: Yup.string().required("La prescription est obligatoire"),
   });
 
   const handleSubmit = async (values: any, { setSubmitting, resetForm }: any) => {
@@ -30,10 +35,18 @@ export default function AddSuivi({ patientId, initialDescription = "", onClose, 
       return;
     }
 
+    if(value === '' || prescript === ''){
+      toast.error("Veuillez remplir tous les champs.");
+      setSubmitting(false);
+      return;
+    }
+
     const result = await createSuivi({
       patientId,
-      description: values.description,
-      prescription: values.prescription,
+      // description: values.description,
+      // prescription: values.prescription,
+      description: value,
+      prescription: prescript,
       fichier: file,
     });
 
@@ -52,7 +65,7 @@ export default function AddSuivi({ patientId, initialDescription = "", onClose, 
 
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-4xl">
         <h2 className="text-xl font-bold mb-4">Ajouter un suivi</h2>
 
         <Formik
@@ -64,23 +77,28 @@ export default function AddSuivi({ patientId, initialDescription = "", onClose, 
             <Form className="flex flex-col gap-4">
               <div>
                 <label className="block mb-1">Description</label>
-                <Field
+                <ReactQuill theme="snow" value={value} onChange={setValue} />
+
+                {/* <Field
                   name="description"
                   as="textarea"
                   rows={3}
                   className="w-full border rounded px-2 py-1"
                 />
-                <ErrorMessage name="description" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage name="description" component="div" className="text-red-500 text-sm" /> */}
               </div>
+
 
               <div>
                 <label className="block mb-1">Prescription</label>
-                <Field
+                <ReactQuill theme="snow" value={prescript} onChange={setPrescript} />
+
+                {/* <Field
                   name="prescription"
                   type="text"
                   className="w-full border rounded px-2 py-1"
                 />
-                <ErrorMessage name="prescription" component="div" className="text-red-500 text-sm" />
+                <ErrorMessage name="prescription" component="div" className="text-red-500 text-sm" /> */}
               </div>
 
               <div>

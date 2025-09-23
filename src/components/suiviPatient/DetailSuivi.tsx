@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 
 type DetailSuiviProps = {
   suivi: {
@@ -26,7 +27,7 @@ type DetailSuiviProps = {
 export default function DetailSuivi({ suivi, onClose }: DetailSuiviProps) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-4xl">
         <h2 className="text-xl font-bold mb-4">Détails du suivi du patient </h2>
         
         <div className="space-y-2">
@@ -35,9 +36,19 @@ export default function DetailSuivi({ suivi, onClose }: DetailSuiviProps) {
             <p><strong>Patient :</strong> {suivi.patient.name ?? "—"}</p>
           <p><strong>Date de création :</strong> {new Date(suivi.createdAt).toLocaleDateString()}</p>
                     <p><strong>Heure de création :</strong> {new Date(suivi.createdAt).toLocaleTimeString()}</p>
-          <p><strong>Description :</strong> {suivi.description}</p>
-          <p><strong>Prescription :</strong> {suivi.prescription}</p>
-          <p><strong>Fichier :</strong> {suivi.fichier}</p>
+          <p><strong>Description :</strong> <br />
+          <div dangerouslySetInnerHTML={{ __html: suivi.description }} /></p>
+          <p><strong>Prescription :</strong> <br />
+          <div dangerouslySetInnerHTML={{ __html: suivi.prescription }} /> </p>
+          <p><strong>Fichier :</strong> <br />
+           <Image
+            src={suivi.fichier}
+            className="mt-2 rounded mx-auto"
+            alt="Description de mon image"
+            width={250}
+            height={300}
+          />
+      </p>
         </div>
 
         <div className="mt-6 flex justify-end gap-2">

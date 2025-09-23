@@ -1,5 +1,6 @@
 "use server";
 
+import { auth } from "@/auth";
 import prisma from "@/lib/db";
 import fs from "fs";
 import path from "path";
@@ -13,12 +14,12 @@ type CreateSuiviProps = {
 export async function listSuivisByPatient(patientId: number) {
   try {
     const suivis = await prisma.suivi.findMany({
-      where: { patientId: patientId }, // ⚠️ bien vérifier le champ
+      where: { patientId: patientId }, 
       include: {
-        patient: { select: { id: true, name: true } },
-        user: { select: { id: true, name: true, email: true } },
+        patient: true,
+        user: true
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "desc" }
     });
 
     return { success: true, data: suivis };
@@ -41,6 +42,8 @@ export async function deleteSuivi(suiviId: number) {
 export async function createSuivi({ patientId, description, prescription, fichier }: CreateSuiviProps) {
   try {
     // Enregistrer le fichier sur le serveur (ex: /public/uploads)
+    console.log("Fichier reçu:", patientId, description, prescription, fichier);
+    const session = await auth()
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -57,7 +60,7 @@ export async function createSuivi({ patientId, description, prescription, fichie
         prescription,
         fichier: `/uploads/${fichier.name}`,
         patient: { connect: { id: patientId } },
-        user: { connect: { id: "cmfvhwahs0001ufy4n0o2q4w4" } }, // ID du médecin (à adapter)
+        user: { connect: { id: session?.user?.id } }, // ID du médecin (à adapter)
       },
     });
 
