@@ -3,6 +3,7 @@
 import React from "react";
 import { useState } from "react";
 import EditPatient from "@/components/patient/EditPatient";
+import AssignDoctorModal from "@/components/patient/AssignDoctorModal";
 
 type Patient = {
   id: number;
@@ -22,6 +23,7 @@ type DetailPatientProps = {
  
 export default function DetailPatient({ patient, onClose }: DetailPatientProps) {
    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); 
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
    const handleEditClick = (patient: Patient) => {
     setSelectedPatient(patient);
@@ -100,7 +102,14 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
         </div>
 
         {/* Boutons */}
-        <div className="mt-8 flex justify-end gap-3">
+        <div className="mt-8 flex justify-between gap-3">
+          
+          <button
+             onClick={() => setIsAssignModalOpen(true)}
+            className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-white transition bg-[#08A3DC]"
+          >
+           Assigner un médécin traitant
+          </button>
           <button
             onClick={() => onClose()}
             className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-600 transition hover:bg-gray-100"
@@ -120,6 +129,12 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
               patient={selectedPatient}
           onClose={() => setIsEditModalOpen(false)} />
             )}
+             {isAssignModalOpen && (
+        <AssignDoctorModal
+          patientId={patient.id}
+          onClose={() => setIsAssignModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

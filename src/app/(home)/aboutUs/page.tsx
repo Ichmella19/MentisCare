@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 'use client';
 import Header from "@/components/(home)/header/header";
+import Footer from "@/components/(home)/footer/footer";
 import React from 'react';
 import { motion } from "framer-motion";
 interface AboutUsProps {
@@ -121,7 +122,9 @@ const AboutUs: React.FC<AboutUsProps> = () => {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
+   
   );
 };
 

@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import Header from "./header/header";
+ import Footer from "./footer/footer";
 import { Paginate } from "../Paginate";
 import ModalReservation from "@/components/(home)/ModalReservation";
 import { set } from "zod";
@@ -13,6 +14,7 @@ import { toast } from "react-toastify";
 
 
 type Reservation = {
+
   category: any;
   user: any;
   id :number;
@@ -151,6 +153,10 @@ export default function ReservationPage() {
                 toast.error("Erreur lors de la réservation : " + result.message);
             }
             }}
-        />    </div>  
+             
+        />  
+        <Footer />
+      
+          </div>  
   );
 }
