@@ -35,6 +35,8 @@ model User {
 
   Calendar Calendar[]
 
+
+  Patient Patient[]
 }
  
 model Account {
@@ -96,15 +98,16 @@ model Authenticator {
 model Patient {
   id            Int     @id @default(autoincrement())
   name          String?
-   email       String?  
-  phone       String?
+  email         String?  
+  phone         String?
   adresse       String
   sexe          String
   pays          String
   dateNaissance String
-  userId        String
+  userId        String?
   matricule     String  @unique
   Suivi         Suivi[]
+  user          User?    @relation(fields: [userId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }

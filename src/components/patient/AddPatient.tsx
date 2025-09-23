@@ -50,7 +50,7 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
             onSubmit={async (values, { setSubmitting, resetForm }) => {
                      try {
                         
-                       const result = await addPatient(values.name, values.email, values.phone , values.adresse ,  values.sexe , values.dateNaissance ,values.pays , session?.user?.id! 
+                       const result = await addPatient(values.name, values.email, values.phone , values.adresse ,  values.sexe , values.dateNaissance ,values.pays 
 
                        );
          

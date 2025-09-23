@@ -37,8 +37,6 @@ export async function addPatient(
   sexe: string,
   dateNaissance: string,
   pays: string,
-  
-  userId: string
 ) {
   try {
       const matricule = genererMatriculeUnique();
@@ -52,7 +50,6 @@ export async function addPatient(
         dateNaissance,
         pays,
         matricule,
-        userId,
       },
     });
 
