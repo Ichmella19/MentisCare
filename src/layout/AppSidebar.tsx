@@ -18,6 +18,7 @@ import {
   TableIcon,
   UserCircleIcon,
   Layers,
+  PatientIcon,
 } from "../icons/index";
 
 
@@ -57,8 +58,13 @@ const navItems: NavItem[] = [
   },
   {
     name: "Reservations",
-    icon: <TableIcon />,
+    icon: <TableIcon/>,
    path: "/admin/calendar",
+  },
+  {
+    name: "Mes patients",
+    icon: <PatientIcon  />,
+   path: "/admin/mespatients",
   },
     {
     name: "Notifications",

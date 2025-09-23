@@ -1,6 +1,8 @@
 'use client';
 import Header from "@/components/(home)/header/header";
 import React, { useState } from "react";
+
+    import Footer from "@/components/(home)/footer/footer";
 import { motion } from "framer-motion";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -142,22 +144,41 @@ const ContactForm: React.FC=() => {
       </section>
 
 
-      <section className={`py-16 text-center `}>
-        <div className="max-w-4xl mx-auto px-4">
-          <h2 className={`text-3xl font-bold mb-4`}>Vous avez une question ?</h2>
-          <p className="text-white dark:text-black mb-6">
-            Consultez notre FAQ pour obtenir des réponses rapides à vos questions fréquentes.
-          </p>
-         
-<Link href="/faq">
-  <button className="border border-[#08A3DC] text-[#08A3DC] hover:bg-[#08A3DC] hover:text-white px-6 py-2 rounded-full transition duration-300">
-    Consulter la FAQ
-  </button>
-</Link>
-        </div>
-      </section>
+      <section className="py-16 bg-white dark:bg-black text-black dark:text-white">
+  <div className="container mx-auto px-4 max-w-5xl text-center">
+    <h2
+      className="md:text-5xl text-4xl font-bold mb-6 text-black dark:text-white"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
+      Notre localisation
+    </h2>
+    <p
+      className="mb-8 md:text-xl text-lg text-black dark:text-white"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
+      Retrouvez le Centre Saint Camille au cœur de l'Atlantique plus précisément à Abomey-Calavi.  
+      Un espace dédié à l’accompagnement, aux consultations et au suivi des patients.
+    </p>
+
+    {/* Carte intégrée (Google Maps Embed) */}
+    <div className="rounded-2xl shadow-lg overflow-hidden">
+      <iframe
+        // src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3979.765784018933!2d2.391236!3d6.370293!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x102357fcb2a9e5d7%3A0xf87f9c5d1f3c0!2sCotonou!5e0!3m2!1sfr!2sbj!4v1699999999999!5m2!1sfr!2sbj"
+        width="100%"
+        height="450"
+        style={{ border: 0 }}
+        allowFullScreen
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      ></iframe>
     </div>
+  </div>
+</section>
+ <Footer />
+    </div>
+     
   );
 };
+
 
 export default ContactForm;

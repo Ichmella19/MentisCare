@@ -1,4 +1,5 @@
 import PlusIcon from "./plus.svg";
+import PatientIcon from "./patient.svg";
 import CloseIcon from "./close.svg";
 import BoxIcon from "./box.svg";
 import CheckCircleIcon from "./check-circle.svg";
@@ -114,4 +115,5 @@ export {
   WalletIcon,
   PersonIcon,
  Layers,
+  PatientIcon,
 };
