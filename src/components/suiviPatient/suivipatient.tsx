@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -153,7 +154,16 @@ export default function SuiviPatientPage() {
         {isModalOpen && (
         <AddSuivi
           onClose={() => setIsModalOpen(false)}
-          onSuccess={(newSuivi) => setSuivis([newSuivi, ...suivis])}
+          onSuccess={(newSuivi) => setSuivis([
+            {
+              ...newSuivi,
+              createdAt: newSuivi.createdAt ?? new Date().toISOString(),
+              updatedAt: newSuivi.updatedAt ?? new Date().toISOString(),
+              patient: newSuivi.patient ?? {},
+              user: newSuivi.user ?? {},
+            },
+            ...suivis
+          ])}
             initialDescription={`Suivi pour le patient ID: ${patientId}`}
             patientId={patientId}
         />

@@ -1,8 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
 import prisma from "@/lib/db";
 import { genererMatriculeUnique } from "@/lib/zod";
-import { ca } from "zod/v4/locales";
  const take = 12
 
 export async function listPatients(page:number, search:string) {
