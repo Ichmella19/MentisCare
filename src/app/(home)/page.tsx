@@ -8,32 +8,16 @@
 
     import { FaUserMd, FaHeartbeat, FaUsers, FaLightbulb, FaHospital } from "react-icons/fa";
 
-    import React, {  useRef } from 'react';
+    import React from 'react';
 
-    import { useInView } from 'framer-motion';
-    import { MapPin } from 'lucide-react';
 
 
 
     export default function Home() {
         
     const router = useRouter();
-        const ref = useRef(null);
-    const isInView = useInView(ref, { once: true });
 
-    const locations = [
-        {
-        name: "Siège Bénin Calavi- Kpota",
-        address: "Calavi kpota, Cotonou, Bénin",
-        coordinates: { lat: 6.3703, lng: 2.3912 }
-        },
-        {
-        name: "Bureau Togo - Lomé",
-        address: "Centre-ville, Lomé, Togo",
-        coordinates: { lat: 6.1319, lng: 1.2228 }
-        }
-    ];
-        
+   
         const services = [
             {
                 icon: <FaUserMd className="text-blue-600 text-5xl" />,

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { listSuivisByPatient } from "@/app/admin/(others-pages)/suiviPatient/action";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import {FaTrash } from "react-icons/fa";
 import { Eye } from "lucide-react";
 import { toast } from "react-toastify";
 import { deleteSuivi } from "@/app/admin/(others-pages)/suiviPatient/action";
@@ -124,12 +124,6 @@ export default function SuiviPatientPage() {
                       className=" border-[#08A3DC] rounded-[5px] dark:hover:bg-[#08A3DC] bg-gray-200 dark:bg-transparent border-1  hover:bg-[#08A3DC] hover:text-white transition">
                         <Eye />
                       </button> 
-                      <button
-                     
-                        className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC]  hover:text-white transition"
-                      >
-                        <FaEdit />
-                      </button>
                       <button
                         onClick={() => handleDeleteClick(s)}
                         className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"

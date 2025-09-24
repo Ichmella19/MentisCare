@@ -26,7 +26,7 @@ type DetailSuiviProps = {
 
 export default function DetailSuivi({ suivi, onClose }: DetailSuiviProps) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-80 flex items-center justify-center bg-black/40 mx-auto">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-4xl">
         <h2 className="text-xl font-bold mb-4">Détails du suivi du patient </h2>
         

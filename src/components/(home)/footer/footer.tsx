@@ -40,6 +40,7 @@ export default function Footer() {
                 { label: "À propos", path: "/about" },
               { label: "Contact", path: "/contact" },
               { label: "Réservations", path: "/reservation" },
+              { label: "Suivre mon proche", path: "/suivreproche" },
             
             ].map(({ label, path }) => (
               <li key={label} className="mb-2">

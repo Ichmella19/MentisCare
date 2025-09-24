@@ -5,8 +5,8 @@ import * as Yup from "yup";
 
 // ----------------- Types -----------------
 type Reservation = {
-  category: any;
-  user: any;
+  // category: any;
+  // user: any;
   id: number;
   date: string;
   heureDebut: string;

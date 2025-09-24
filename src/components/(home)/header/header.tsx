@@ -19,7 +19,8 @@ const Header: React.FC = () => {
     { label: "Accueil", href: "/" },
     { label: "À Propos", href: "/aboutUs" },
     { label: "Contact", href: "/contact" },
-       { label: "Réservation", href: "/reservation" },
+    { label: "Réservation", href: "/reservation" },
+    { label: "Suivre mon Proche", href: "/suivreproche" },
   ];
 
   return (
