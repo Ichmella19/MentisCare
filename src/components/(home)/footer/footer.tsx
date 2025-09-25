@@ -50,26 +50,17 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* Nos services */}
-        <div>
-          <h3 className="md:text-xl text-lg font-semibold mb-4 relative w-fit cursor-pointer">
-            Nos services
-            <span className="absolute left-0 bottom-0 w-1/2 h-1 rounded-md bg-[#08A3DC]"></span>
-          </h3>
-          <ul className={`text-[16px]`}>
-            {[
-              { label: "Consultations en ligne", path: "/services#consultation" },
-              { label: "Suivi personnalisé", path: "/services#suivi" },
-              { label: "Espace d'échange", path: "/services#communauté" },
-              { label: "Orientation vers des spécialistes", path: "/services#orientation" },
-            ].map(({ label, path }) => (
-              <li key={label} className="mb-2">
-                <a href={path} className="hover:text-[#08A3DC]">{label}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
+       <div>
+  <h3 className="md:text-xl text-lg font-semibold mb-4 relative w-fit cursor-pointer">
+    Besoin d’aide ?
+    <span className="absolute left-0 bottom-0 w-1/2 h-1 rounded-md bg-[#08A3DC]"></span>
+  </h3>
+  <ul className="text-[16px]">
+    <li className="mb-2">📞 Urgence : <a href="tel:+22901020304" className="hover:text-[#08A3DC]">+229 01 02 03 04</a></li>
+    <li className="mb-2">Email : <a href="mailto:support@mentiscare.com" className="hover:text-[#08A3DC]">support@mentiscare.com</a></li>
+    <li className="mb-2">📍 Adresse : Cotonou, Bénin</li>
+  </ul>
+</div>
         {/* Newsletter */}
         <div>
           <h3 className="md:text-xl text-lg font-semibold mb-4 relative w-fit cursor-pointer">

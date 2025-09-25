@@ -6,6 +6,7 @@ import Header from "./header/header";
 import Footer from "./footer/footer";
 import { suivi } from "@/app/(home)/suivreproche/action";
 import { email, int, set } from "zod";
+import DetailProcheModal from "@/components/(home)/DetailProche";
 
 type Suivi = {
   id: number;
@@ -14,7 +15,7 @@ type Suivi = {
   prescription: string;
   fichier: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string;   
   patientId: number;
 }
 
@@ -38,6 +39,18 @@ export default function SuiviProchePage() {
   const [showData, setShowData] = useState(false);
   const [patientData, setPatientData] = useState<Patient>();; // Pour stocker les données du patient
   const [lastSuivi, setlastSuivi] = useState<Suivi>(); // Pour stocker le dernier suivi
+   const [selectedSuivi, setSelectedSuivi] = useState<Suivi | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (suivi: Suivi) => {
+    setSelectedSuivi(suivi);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setSelectedSuivi(null);
+    setIsModalOpen(false);
+  };
 
   const handleSearch = async () => {
     // pour l’instant on ne fait que simuler
@@ -125,30 +138,35 @@ export default function SuiviProchePage() {
       {(showData && patientData) && (
         <>          
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-blue-300 dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
+            <div className="bg-white dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
               <h2 className="font-semibold text-lg mb-2">Nombre de Rapport</h2>
               <p className="text-2xl font-bold text-blue-600">{patientData?.suivis?.length}</p>
             </div>
 
-            <div className="bg-blue-300 dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
+            <div className="bg-white dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
               <h2 className="font-semibold text-lg mb-2">Patient</h2>
               <p className="text-green-600 font-bold">{patientData?.name}</p>
             </div>
 
-            <div className="bg-blue-300 dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
+            <div className="bg-white dark:bg-gray-600 shadow-md rounded-lg p-6 text-center">
               <h2 className="font-semibold text-lg mb-2">Dernier rendez-vous</h2>
               <p className="text-md">{lastSuivi?.updatedAt}</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-5 m-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-5 m-auto">
             {patientData?.suivis.map((suivi) => (
               <div key={suivi.id} className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 text-center border border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold mb-2 text-[#08A3DC]">Rapporteur</h3>
+                <h3 className="font-semibold mb-2 ">Rapporteur</h3>
                 <p className="text-sm mb-1"><strong>Date de création:</strong> {new Date(suivi.createdAt).toLocaleDateString()}</p>
-                <a href={suivi.fichier} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline text-sm">
-                  Détails
-                </a>
+                <div className="mt-4">
+                  <button
+                    onClick={() => openModal(suivi)}
+                    className="bg-[#08A3DC] text-white px-3 py-1 rounded-md hover:bg-[#067aa7] transition"
+                  >
+                    Voir Détails
+                  </button>
+              </div>
               </div>
             ))}
           </div>
@@ -157,6 +175,8 @@ export default function SuiviProchePage() {
         
       )}
     </div>
+          <DetailProcheModal isOpen={isModalOpen} onClose={closeModal} suivi={selectedSuivi} />
+
     <Footer />
      </div>
   );

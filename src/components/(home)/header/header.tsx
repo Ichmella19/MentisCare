@@ -84,7 +84,7 @@ const Header: React.FC = () => {
               className="bg-[#003A44] text-white px-5 py-2 transition duration-200"
               onClick={() => router.push("/donnation")}
             >
-              Faire des dons
+              Faire un don
             </button>
           </div>
           <ThemeToggleButton />
