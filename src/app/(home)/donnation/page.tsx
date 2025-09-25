@@ -5,6 +5,7 @@
   import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
   import * as Yup from "yup";
   import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
+import { generateFedaLink } from "./action";
 
   type DonationValues = {
     name: string;
@@ -21,7 +22,7 @@
       name: "",
       email: "",
       phone: "",
-      amount: 80,
+      amount: 500,
       donationType: "one-time",
     };
 
@@ -44,9 +45,17 @@
     ) => {
       setSubmitting(true);
       try {
-        // TODO: Appel API / traitement paiement
-        console.log("Données du don :", values);
-        alert(`Merci ! Don reçu : ${values.amount} €`);
+        const result = await generateFedaLink(
+          values.name,
+          values.email,
+          values.phone,
+          String(values.amount)
+        );
+
+        if(result.success && result.url){
+          window.location.href = result.url;
+        }
+
       } catch (err) {
         console.error(err);
         alert("Erreur lors de la soumission");

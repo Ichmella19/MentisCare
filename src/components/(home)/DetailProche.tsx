@@ -27,7 +27,7 @@ export default function DetailProcheModal({ isOpen, onClose, suivi }: DetailProc
         </p>
         
         <p className="mb-4 text-sm text-gray-700 dark:text-gray-300">
-          <strong>Description :</strong> {suivi.description}
+          <strong>Description :</strong> <div dangerouslySetInnerHTML={{ __html: suivi.description }}></div> 
         </p>
 
         {suivi.fichier && (
