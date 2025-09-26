@@ -8,7 +8,7 @@ interface AboutUsProps {
   theme: "light" | "dark";
 }
 const AboutUs: React.FC<AboutUsProps> = () => {
-  
+
   return (
      
     <div className= {`min-h-screen flex flex-col bg-white text-black dark:bg-black dark:text-white`}style={{ fontFamily: 'Montserrat, sans-serif' }}>

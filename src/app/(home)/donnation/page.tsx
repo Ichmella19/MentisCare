@@ -82,7 +82,16 @@ import { generateFedaLink } from "./action";
         className="w-28 md:w-32 lg:w-36 object-contain cursor-pointer hidden dark:block"
       />
     </Link>
-    <ThemeToggleButton />
+    <div className="flex gap-x-3">
+        <Link
+              href="/"
+              className="px-4 py-2 rounded-md bg-[#08A3DC] text-white text-sm hover:bg-[#067aa6] flex items-center justify-center"
+            >
+              Retour à l'accueil
+            </Link>
+            <ThemeToggleButton />
+    </div>
+    
   </div>
 
 
