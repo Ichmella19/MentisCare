@@ -1,4 +1,5 @@
 "use server";
+import prisma from '@/lib/db';
 import { FedaPay, Transaction } from 'fedapay';
 import { NextRequest, NextResponse } from 'next/server';
 const FEDAPAY_SECRET_KEY = process.env.FEDAPAY_SECRET_KEY;
@@ -23,14 +24,25 @@ export const GET = async (req: NextRequest) => {
     /* Précisez si vous souhaitez exécuter votre requête en mode test ou live */
     FedaPay.setEnvironment('sandbox'); //ou setEnvironment('live');
         const transaction = await Transaction.retrieve(idString);
-        // if (transaction.status == "approved") {
-        //     console.log(transaction);
-        // }
-        
-        return NextResponse.json({ message: 'Paiement approuvé', transaction }, { status: 200 })
+        if (transaction.status == "approved") {
+            
+            const don = await prisma.don.create({
+                data:{
+                    nom: transaction.custom_metadata.name,
+                    email: transaction.custom_metadata.email,
+                    phone: transaction.custom_metadata.phone,
+                    montant: transaction.amount,
+                    modePaiement: "FedaPay",
+                    identifiantTransaction: transaction.id.toString(),
+                }
+            })
+            
+            return NextResponse.redirect(new URL('/SuccesDon', req.url))
+        }
+        return NextResponse.redirect(new URL('/EchecDon', req.url))
 
     } catch (error) {
         console.error(error)
-        return NextResponse.json({ message: 'Something went wrong ' + error }, { status: 500 })
+        return NextResponse.redirect(new URL('/EchecDon', req.url))
     }
 }

@@ -28,6 +28,9 @@ export async function generateFedaLink(name: string, email: string, phone: strin
     currency: {
         iso: 'XOF'
     },
+    custom_metadata:  {
+            name, email, phone
+        }
     });
 
     const token = await transaction.generateToken();
