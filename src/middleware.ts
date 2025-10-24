@@ -7,6 +7,13 @@ export default auth(async function middleware(req) {
   const { auth } = req;
   const isLoggedIn = !!auth;
 
+  const restrictedPaths = [
+        '/admin/patients',
+        '/admin/users',
+        '/admin/categories',
+        '/admin/portefeuille',
+    ];
+
   // L'URL de la page à laquelle l'utilisateur essaie d'accéder
   const pathname = req.nextUrl.pathname;
 
@@ -25,6 +32,15 @@ export default auth(async function middleware(req) {
 
   if (isLoginPage && isLoggedIn) {
     // Rediriger vers la page d'accueil ou le tableau de bord
+    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+  }
+  // Read role safely (User type may not include 'role') - cast to any or extend types as needed
+  const role = (auth?.user as any)?.role;
+
+
+  const shouldRedirect = role === 'USER' && restrictedPaths.some(path => pathname.startsWith(path));
+
+  if (shouldRedirect) {
     return NextResponse.redirect(new URL('/admin/dashboard', req.url));
   }
 
