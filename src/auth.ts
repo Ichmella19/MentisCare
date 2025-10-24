@@ -72,6 +72,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     // Le callback 'session' est exécuté après le 'jwt'
     async session({ session, token,user }) {
       // // Assurez-vous que le token et son ID existent
+      
       if (session.user && token.id) {
         session.user.id = String(token.id);
       }
