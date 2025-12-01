@@ -7,14 +7,14 @@ import Header from "./header/header";
  import Footer from "./footer/footer";
 import { Paginate } from "../Paginate";
 import ModalReservation from "@/components/(home)/ModalReservation";
-import { set } from "zod";
+
 import { toast } from "react-toastify";
 // import { useRouter } from "next/navigation";
 // import { makeReservation } from "@/app/(home)/reservation/action"; // ✅ vérifie le chemin
 
 
 type Reservation = {
-
+  
   category: any;
   user: any;
   id :number;

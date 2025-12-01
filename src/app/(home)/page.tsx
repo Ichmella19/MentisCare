@@ -91,9 +91,9 @@
         <button
             className="px-6 py-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity bg-white dark:bg-black text-black dark:text-white"
             style={{ fontFamily: "Montserrat, sans-serif" }}
-            onClick={() => router.push("/services")}
+            onClick={() => router.push("/suivreproche")}
         >
-            Découvrir nos services
+          Suivre mon proche
         </button>
         <button
             className="px-6 py-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity bg-white dark:bg-black text-black dark:text-white"

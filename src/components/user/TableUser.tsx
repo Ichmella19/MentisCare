@@ -39,6 +39,8 @@ export default function TableUser() {
   const [search, setSearch] = useState("");
 
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [totalPages, setTotalPages] = useState(1); // Pour la pagination
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -140,8 +142,20 @@ export default function TableUser() {
         </div>
 
         {/* Table for desktop/tablet */}
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full border-collapse text-sm md:text-base">
+ <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
+       {loading ? (
+  <div className="flex flex-col items-center justify-center py-10">
+    <div className="w-10 h-10 border-4 border-[#d61353]/30 border-t-[#d61353] rounded-full animate-spin"></div>
+    <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
+      Chargement des utilisateurs...
+    </p>
+  </div>
+)  : error ? (
+
+          <div className="text-center text-red-500 py-8">{error}</div>
+        ) :users.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">Aucun utilisateur  trouvé</div>
+        ) : (          <table className="w-full border-collapse text-sm md:text-base">
             <thead>
               <tr className="bg-gray-100 dark:bg-gray-700 text-left">
                 <th className="p-3">Nom Complet</th>
@@ -221,6 +235,7 @@ export default function TableUser() {
               )}
             </tbody>
           </table>
+        )}
         </div>
         { totalPages === 1 ? ''
         :<Paginate pages ={totalPages} currentPage={page} path="/admin/users" param={param} />

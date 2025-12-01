@@ -20,7 +20,6 @@ const Header: React.FC = () => {
     { label: "À Propos", href: "/aboutUs" },
     { label: "Contact", href: "/contact" },
     { label: "Réservation", href: "/reservation" },
-    { label: "Suivre mon Proche", href: "/suivreproche" },
   ];
 
   return (
@@ -29,6 +28,7 @@ const Header: React.FC = () => {
         
         {/* Logo */}
         <Link href="/" className="flex items-center">
+        
           <img
             src="/assets/images/Light1.png"
             alt="Logo clair"

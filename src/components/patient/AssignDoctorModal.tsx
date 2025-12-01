@@ -29,6 +29,7 @@ export default function AssignDoctorModal({ patientId, onClose }: AssignDoctorMo
         const res = await fetch("@/app/admin/(others-pages)/patients/action");
         const data = await res.json();
         setDoctors(data);
+
       } catch (error) {
         console.error("Erreur fetch doctors", error);
       }

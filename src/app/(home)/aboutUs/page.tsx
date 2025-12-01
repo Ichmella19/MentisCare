@@ -4,9 +4,11 @@ import Header from "@/components/(home)/header/header";
 import Footer from "@/components/(home)/footer/footer";
 import React from 'react';
 import { motion } from "framer-motion";
-interface AboutUsProps {
+type AboutUsProps = {
   theme: "light" | "dark";
+  // autres props...
 }
+
 const AboutUs: React.FC<AboutUsProps> = () => {
 
   return (
