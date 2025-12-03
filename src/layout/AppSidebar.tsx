@@ -63,7 +63,7 @@ const AppSidebar: React.FC = () => {
     } 
     else if (role === 'USER') {
       return [
-        { icon: <GridIcon />, name: "Tableau de bord", path: "/admin/dashboard" },
+        { icon: <GridIcon />, name: "Tableau de bord", path: "/admin/dashboard/personal" },
         { icon: <HospitalIcon />, name: "Gestions des consultations", path: "/admin/consultations" },
         { name: "Reservations", icon: <TableIcon />, path: "/admin/calendar" },
         { name: "Mes patients", icon: <PatientIcon />, path: "/admin/mespatients" },

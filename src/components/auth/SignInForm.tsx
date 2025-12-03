@@ -6,14 +6,20 @@ import { toast } from "react-toastify";
 
 import Link from "next/link";
 import React, { useState } from "react";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import * as Yup from "yup";
 import { Formik, Form, Field } from "formik";
+
+interface ExtendedUser {
+  role?: 'ADMIN' | 'USER';
+  [key: string]: unknown;
+}
 
 
 export default function SignInForm() {
   const router = useRouter();
   const [isChecked, setIsChecked] = useState(false);
+  const { data: session } = useSession();
 
 const validationSchema = Yup.object({
   email: Yup.string().email("Email invalide").required("Ce champ est requis"),
@@ -31,7 +37,6 @@ const onSubmit = async (
   values: { email: string; password: string },
   { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }
 ) => {
-
   const result = await signIn("credentials", {
     redirect: false,
     email: values.email,
@@ -40,10 +45,18 @@ const onSubmit = async (
 
   if (result?.error) {
     toast.error("Erreur de connexion :");
-  }else{
+  } else {
     toast.success("Bienvenu sur notre plateforme");
-    router.push("/admin/dashboard")
+    
+  const user = session?.user as ExtendedUser | undefined;
+  const role = user?.role;
+    if (role == 'ADMIN') {
+      router.push("/admin/dashboard");
+    }else{
+      router.push("/admin/dashboard/personal");
+    }
   }
+  setSubmitting(false);
   setSubmitting(false);
 
 };
