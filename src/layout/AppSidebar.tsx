@@ -271,7 +271,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "ADMIN DASHBOARD"
+                  "TABLEAU DE BORD"
                 ) : (
                   <HorizontaLDots />
                 )}

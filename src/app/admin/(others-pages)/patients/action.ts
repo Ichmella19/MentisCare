@@ -3,34 +3,35 @@
 
 import prisma from "@/lib/db";
 import { genererMatriculeUnique } from "@/lib/zod";
- const take = 12
+import { createNotification } from "@/lib/notification";
+const take = 12
 
-export async function listPatients(page:number, search:string) {
+export async function listPatients(page: number, search: string) {
   const skip = (page - 1) * take;
-    const patients = await prisma.patient.findMany({
-      where:{
-        OR:[
-          {name: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {email: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {phone: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {adresse: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {sexe: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {dateNaissance: {contains:search.toLowerCase(), mode: 'insensitive'}},
-          {pays: {contains:search.toLowerCase(), mode: 'insensitive'}},
-        ]
-      },
-        orderBy: { createdAt: 'desc' },
-        include: { user: true },
-        take,
-        skip
-    });
+  const patients = await prisma.patient.findMany({
+    where: {
+      OR: [
+        { name: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { email: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { phone: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { adresse: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { sexe: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { dateNaissance: { contains: search.toLowerCase(), mode: 'insensitive' } },
+        { pays: { contains: search.toLowerCase(), mode: 'insensitive' } },
+      ]
+    },
+    orderBy: { createdAt: 'desc' },
+    include: { user: true },
+    take,
+    skip
+  });
 
-    const totalUsers = await prisma.patient.count();
-    const totalPages = Math.ceil(totalUsers / take);
+  const totalUsers = await prisma.patient.count();
+  const totalPages = Math.ceil(totalUsers / take);
 
-//    
-    return { success: true, data: {patients, totalPages} };
-} 
+  //    
+  return { success: true, data: { patients, totalPages } };
+}
 export async function addPatient(
   name: string,
   email: string,
@@ -41,7 +42,7 @@ export async function addPatient(
   pays: string,
 ) {
   try {
-      const matricule = genererMatriculeUnique();
+    const matricule = genererMatriculeUnique();
     await prisma.patient.create({
       data: {
         name,
@@ -62,48 +63,48 @@ export async function addPatient(
   }
 }
 export async function deletePatient(id: number) {
-    const patient = await prisma.patient.findUnique({
-        where: { id },
-    });
-    if (!patient) {
-        return { success: false, message: "Patient non trouvé." };
-    }
-    await prisma.patient.delete({
-        where: { id },
-    });
-    return { success: true, message: "Patient supprimé avec succès." };
+  const patient = await prisma.patient.findUnique({
+    where: { id },
+  });
+  if (!patient) {
+    return { success: false, message: "Patient non trouvé." };
+  }
+  await prisma.patient.delete({
+    where: { id },
+  });
+  return { success: true, message: "Patient supprimé avec succès." };
 }
 export async function editPatient(
   id: number,
   name: string,
-    email: string,
-    phone: string,
-    adresse: string,
-    sexe: string,
-    dateNaissance: string,
-    pays: string,
-    matricule: string
+  email: string,
+  phone: string,
+  adresse: string,
+  sexe: string,
+  dateNaissance: string,
+  pays: string,
+  matricule: string
 ) {
-    const patient = await prisma.patient.findUnique({
-        where: { id },
-    });
-    if (!patient) {
-        return { success: false, message: "Patient non trouvé." };
-    }
-    await prisma.patient.update({
-        where: { id },
-        data: {
-        name,
-        email,
-        phone,
-        adresse,
-        sexe,
-        dateNaissance,
-        pays,
-        matricule,
-        },
-    });
-    return { success: true, message: "Patient mis à jour avec succès." };
+  const patient = await prisma.patient.findUnique({
+    where: { id },
+  });
+  if (!patient) {
+    return { success: false, message: "Patient non trouvé." };
+  }
+  await prisma.patient.update({
+    where: { id },
+    data: {
+      name,
+      email,
+      phone,
+      adresse,
+      sexe,
+      dateNaissance,
+      pays,
+      matricule,
+    },
+  });
+  return { success: true, message: "Patient mis à jour avec succès." };
 }
 // action.ts
 
@@ -141,16 +142,25 @@ export async function assignDoctorToPatient(patientId: number, doctorId: string)
     });
     if (!doctor) {
       return { success: false, message: "Médecin non trouvé." };
-    } 
+    }
 
     await prisma.patient.update({
       where: { id: patientId },
       data: { user: { connect: { id: doctorId } } },
     });
+
+    await createNotification(
+      doctorId,
+      "Nouveau patient assigné",
+      `Le patient ${patient.name} vous a été assigné.`,
+      "ASSIGNMENT",
+      `/admin/mespatients`
+    );
+
     return { success: true, message: "Médecin assigné au patient avec succès." };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
 
-  }catch (error: any) {
+  } catch (error: any) {
     return { success: false, message: error.message || "Erreur lors de l'assignation du médecin au patient." };
   }
 }
