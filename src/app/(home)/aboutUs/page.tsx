@@ -4,12 +4,8 @@ import Header from "@/components/(home)/header/header";
 import Footer from "@/components/(home)/footer/footer";
 import React from 'react';
 import { motion } from "framer-motion";
-type AboutUsProps = {
-  theme: "light" | "dark";
-  // autres props...
-}
 
-const AboutUs: React.FC<AboutUsProps> = () => {
+const AboutUs: React.FC = () => {
 
   return (
      
@@ -29,7 +25,7 @@ const AboutUs: React.FC<AboutUsProps> = () => {
         <section className= {`py-16 px-6 lg:px-20`} >
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6 text-[#08A3DC] tracking-wider"        style={{ fontFamily: 'Ibrand, sans-serif' }}>Notre Histoire</h2>
+              <h2 className="text-3xl font-bold mb-6 text-[#08A3DC] tracking-wider" style={{ fontFamily: 'Ibrand, sans-serif' }}>Notre Histoire</h2>
               <p className="mb-4 text-lg">
                 MentisCare est né d'un constat poignant : au Bénin, la santé mentale est encore largement négligée.
               </p>

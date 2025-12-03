@@ -7,10 +7,8 @@ import Link from "next/link";
 import React from "react";
 
 export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+      children,
+    }) {
   return (
     <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <ThemeProvider>
