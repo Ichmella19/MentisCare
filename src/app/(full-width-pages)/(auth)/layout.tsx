@@ -5,9 +5,12 @@ import { ThemeProvider } from "@/context/ThemeContext";
 
 import Link from "next/link";
 import React from "react";
+
 export default function AuthLayout({
-          children,
-        }) {
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <div className="relative p-6 bg-white z-1 dark:bg-gray-900 sm:p-0" style={{ fontFamily: 'Montserrat, sans-serif' }}>
       <ThemeProvider>
@@ -18,17 +21,17 @@ export default function AuthLayout({
               {/* <!-- ===== Common Grid Shape Start ===== --> */}
               <GridShape />
               <div className="flex flex-col items-center max-w-xs">
-                <Link href="/" className="block mb-4">
-                  <img
-                    src="assets/images/Whitehorizontal.png"
-                    alt="Logo clair"
-                    className="w-28 md:w-36 lg:w-68 object-contain cursor-pointer "
-                  />
-                </Link>
+                 <Link href="/" className="block mb-4">
+                               <img
+    src="assets/images/Whitehorizontal.png"
+    alt="Logo clair"
+    className="w-28 md:w-36 lg:w-68 object-contain cursor-pointer "
+  />
+                 </Link>
 
 
                 <p className="text-center text-white ">
-                  Une plateforme numérique dédiée au bien-être mental, offrant un suivi et un accompagnement personnalisé
+               Une plateforme numérique dédiée au bien-être mental, offrant un suivi et un accompagnement personnalisé
                 </p>
               </div>
             </div>
