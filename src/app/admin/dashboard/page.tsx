@@ -34,30 +34,26 @@ export default function Dashboard() {
       </div>
 
       <div className="col-span-12 xl:col-span-4 space-y-6">
-        {/* ====== DIAGNOSTICS (Camembert) ====== */}
-        <DiagnosticPie />
-
-        {/* ====== RÉPARTITION PAR SEXE ====== */}
         <GenderPie />
       </div>
 
       {/* ====== STATUT DES TRAITEMENTS ====== */}
       <div className="col-span-12">
-        <TreatmentStatusBar />
+        {/* <TreatmentStatusBar /> */}
       </div>
 
       {/* ====== ALERTES : Patients à Risque ====== */}
-      <div className="col-span-12 xl:col-span-4">
+      {/* <div className="col-span-12 xl:col-span-4">
         <RiskAlerts />
-      </div>
+      </div> */}
 
       {/* ====== RÉCENT : Patients ====== */}
-      <div className="col-span-12 xl:col-span-4">
+      <div className="col-span-12 xl:col-span-6">
         <RecentPatients />
       </div>
 
       {/* ====== RÉCENT : Consultations ====== */}
-      <div className="col-span-12 xl:col-span-4">
+      <div className="col-span-12 xl:col-span-6">
         <RecentConsultations />
       </div>
     </div>

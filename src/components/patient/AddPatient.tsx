@@ -122,7 +122,7 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
                 name="sexe"
                 className="w-full border px-3 py-2 rounded"
               >
-                <option value="Sexe">Sexe</option>
+                <option value="">Sexe</option>
                 <option value="M">Masculin</option>
                 <option value="F">Féminin</option>
               </Field>

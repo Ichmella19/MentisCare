@@ -13,6 +13,7 @@ export default auth(async function middleware(req) {
   const isLoggedIn = !!auth;
 
   const restrictedPaths = [
+    'admin/dashboard',
     '/admin/patients',
     '/admin/users',
     '/admin/categories',
@@ -32,19 +33,21 @@ export default auth(async function middleware(req) {
 
   // Rediriger les utilisateurs authentifiés loin de la page de connexion
   const isLoginPage = pathname === '/signin';
-
-  if (isLoginPage && isLoggedIn) {
-    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
-  }
-
-  // Typage sécurisé du role
+  
   const user = auth?.user as ExtendedUser | undefined;
   const role = user?.role;
+
+  if (isLoginPage && isLoggedIn) {
+    if(role == "ADMIN")
+      return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+    else
+      return NextResponse.redirect(new URL('/admin/dashboard/personal', req.url));
+  }
 
   const shouldRedirect = role === 'USER' && restrictedPaths.some(path => pathname.startsWith(path));
 
   if (shouldRedirect) {
-    return NextResponse.redirect(new URL('/admin/dashboard', req.url));
+    return NextResponse.redirect(new URL('/admin/dashboard/personal', req.url));
   }
 
   return NextResponse.next();
