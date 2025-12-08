@@ -13,8 +13,11 @@ type Patient = {
   adresse: string;
   pays: string;
   sexe: string;
+  matricule: string;
   dateNaissance: string ;
-  user: any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+user: any;
+
 };
 
 type DetailPatientProps = {
@@ -91,6 +94,12 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
               <h3 className="text-sm font-medium text-gray-500">Adresse</h3>
               <p className="text-black dark:text-white">
                 {patient.adresse}
+              </p>
+            </div>
+             <div>
+              <h3 className="text-sm font-medium text-gray-500">Matricule du patient</h3>
+              <p className="text-black dark:text-white">
+                {patient.matricule}
               </p>
             </div>
              <div>

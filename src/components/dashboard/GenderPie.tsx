@@ -44,7 +44,7 @@ const data = [
         Répartition par sexe
       </h3>
 
-      <PieChart width={300} height={220}>
+      <PieChart width={300} height={300}>
         <Pie
           data={data}
           dataKey="value"

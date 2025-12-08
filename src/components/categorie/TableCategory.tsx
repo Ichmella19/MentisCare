@@ -1,60 +1,68 @@
 "use client";
+
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useState, useEffect } from "react";
-import { listCategories} from "@/app/admin/(others-pages)/categories/action";
-
+import { listCategories, deleteCategory } from "@/app/admin/(others-pages)/categories/action";
 import { useRouter } from "next/navigation";
-
 import { toast } from "react-toastify";
-import { deleteCategory } from "@/app/admin/(others-pages)/categories/action";
- import AddCategory from "@/components/categorie/AddCategory";
- import DeleteCategory from "@/components/categorie/DeleteCategory";
- import EditCategory from "@/components/categorie/EditCategory";
 
-// Définition du type Patient
-type Category = {
+import AddCategory from "@/components/categorie/AddCategory";
+import DeleteCategory from "@/components/categorie/DeleteCategory";
+import EditCategory from "@/components/categorie/EditCategory";
+
+// ----------------------------------------------------------------------
+// TYPES
+// ----------------------------------------------------------------------
+
+interface Category {
   id: number;
-    name: string;
+  name: string;
+  createdAt: string;
+}
 
-    createdAt: string;
-};
+// ----------------------------------------------------------------------
+// COMPOSANT
+// ----------------------------------------------------------------------
 
 export default function TableCategory() {
-  const [categories, setCategories] = useState<Category[]>([]);
- 
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const router = useRouter(); 
+  const [search, setSearch] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  // Charger les catégories
   useEffect(() => {
-    async function loadPatients() {
+    async function loadCategories() {
+      setLoading(true);
+      setError(null);
+
       try {
         const result = await listCategories();
 
         if (result.success && result.data) {
-          setCategories(
-             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            result.data.map((p: any) => ({
-                id: p.id,
-                name: p.name ?? "",
-                createdAt: p.createdAt ?? "",
-
-            }))
-          );
+          setCategories(result.data);
         } else {
-          setCategories([]);
+          setError(result.message || "Erreur lors du chargement des catégories");
         }
-      } catch (error) {
-        console.error("Erreur lors du chargement des patients :", error);
-        setCategories([]);
+      } catch (err) {
+        console.error("Erreur:", err);
+        setError("Erreur serveur lors du chargement");
+      } finally {
+        setLoading(false);
       }
     }
 
-    loadPatients();
-  }, [search]);
+    loadCategories();
+  }, []);
 
+  // Actions
   const handleDeleteClick = (category: Category) => {
     setSelectedCategory(category);
     setIsDeleteModalOpen(true);
@@ -64,34 +72,30 @@ export default function TableCategory() {
     setSelectedCategory(category);
     setIsEditModalOpen(true);
   };
-  
+
   const confirmDelete = async () => {
-  if (!selectedCategory) return;
+    if (!selectedCategory) return;
 
-  try {
-    const result = await deleteCategory(selectedCategory.id); 
+    try {
+      const result = await deleteCategory(selectedCategory.id);
 
-    if (result.success) {
-      // Supprime l'utilisateur du state
-      setCategories((prevCategories) => prevCategories.filter((u) => u.id !== selectedCategory.id));
-      toast.success(result.message);
-      setIsDeleteModalOpen(false);
-      setSelectedCategory(null);
-      // router.refresh(); // Actualiser la page pour refléter les changements
-      router.push('/admin/categories');
-    } else {
-      toast.error(result.message || "Erreur lors de la suppression.");
+      if (result.success) {
+        setCategories((prev) => prev.filter((c) => c.id !== selectedCategory.id));
+        toast.success(result.message);
+        setIsDeleteModalOpen(false);
+        setSelectedCategory(null);
+        router.refresh();
+      } else {
+        toast.error(result.message || "Erreur lors de la suppression.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur serveur");
     }
-  } catch (err) {
-    console.error(err);
-    toast.error("Erreur serveur");
-  }
-};
+  };
 
-  const filteredCategories = categories.filter(
-    (p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()) 
-  
+  const filteredCategories = categories.filter((c) =>
+    c.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -99,18 +103,16 @@ export default function TableCategory() {
       className="p-4 md:p-6 bg-white text-black dark:bg-black dark:text-white min-h-screen"
       style={{ fontFamily: "Montserrat, sans-serif" }}
     >
-      {/* Header */}
-      <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">
-    Catégories de maladies
-      </h1>
-     <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
+      <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6">Catégories de maladies</h1>
+
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
-          
+          <h2 className="text-lg font-semibold">Liste des catégories de maladies</h2>
           <button
             className="px-4 py-2 bg-[#08A3DC] text-white rounded-md hover:bg-[#067aa6] w-full sm:w-auto"
             onClick={() => setIsModalOpen(true)}
           >
-            Ajouter une categorie
+            Ajouter une catégorie de maladie
           </button>
         </div>
 
@@ -121,78 +123,102 @@ export default function TableCategory() {
             placeholder="Rechercher..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-2 border rounded-md"
+            className="w-full p-2 border rounded-md dark:bg-gray-700 dark:border-gray-600"
           />
         </div>
 
-
-      {/* Tableau */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full border border-gray-200 shadow rounded-lg text-sm md:text-base">
-          <thead>
-            <tr >
-              <th className="px-4 py-2 text-left">Nom de la catégorie</th>
-                <th className="px-4 py-2 text-left">Date de  création</th>
-                 <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((category) => (
-                <tr
-                  key={category.id}
-                  className="border-t hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <td className="px-4 py-2">{category.name}</td>
-                 <td>{new Date(category.createdAt).toLocaleString()}</td>
-
-
-                
-                  <td className="p-3 text-center flex gap-2 justify-center ">
-                   
-                    <button
-                      onClick={() => handleEditClick(category)}
-                      className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
-                    >
-                      <FaEdit />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(category)}
-                      className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
-                    >
-                      <FaTrash />
-                    </button>
-                  </td>
+        {/* Table / Loader */}
+        <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-10">
+              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC]rounded-full animate-spin"></div>
+              <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
+                Chargement des catégories de maladies...
+              </p>
+            </div>
+          ) : error ? (
+            <div className="text-center text-red-500 py-8">{error}</div>
+          ) : filteredCategories.length === 0 ? (
+            <div className="text-center py-8 text-gray-500">Aucune catégorie trouvée</div>
+          ) : (
+            <table className="w-full border-collapse text-sm md:text-base">
+              <thead>
+                <tr className="bg-gray-100 dark:bg-gray-700 text-left">
+                  <th className="p-3">Nom</th>
+                  <th className="p-3">Créée le</th>
+                  <th className="p-3 text-center">Actions</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-3 text-center text-gray-500">
-                  Aucun patient trouvé
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {filteredCategories.map((category) => (
+                  <tr key={category.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="p-3">{category.name}</td>
+                    <td className="p-3">{new Date(category.createdAt).toLocaleString()}</td>
+                    <td className="p-3 text-center flex gap-2 justify-center flex-wrap">
+                      <button
+                        onClick={() => handleEditClick(category)}
+                        className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
+                        aria-label="Modifier"
+                      >
+                        <FaEdit />
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(category)}
+                        className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
+                        aria-label="Supprimer"
+                      >
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Mobile view */}
+        <div className="block md:hidden space-y-3 mt-4">
+          {filteredCategories.length > 0 ? (
+            filteredCategories.map((category) => (
+              <div key={category.id} className="p-3 border rounded-md shadow-sm flex flex-col gap-2 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div className="font-semibold truncate">{category.name}</div>
+                </div>
+                <div className="text-xs text-gray-500">{new Date(category.createdAt).toLocaleString()}</div>
+                <div className="flex flex-wrap gap-3 mt-2">
+                  <button
+                    onClick={() => handleEditClick(category)}
+                    className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] dark:hover:bg-[#08A3DC] hover:text-white transition"
+                    aria-label="Modifier"
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteClick(category)}
+                    className="border-[#08A3DC] rounded-[5px] p-1 border-1 bg-gray-200 dark:bg-transparent hover:bg-red-500 dark:hover:bg-red-500 hover:text-white transition"
+                    aria-label="Supprimer"
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500">Aucune catégorie trouvée</p>
+          )}
+        </div>
       </div>
-      </div>
-      {/* Modal Ajout */}
+
+      {/* Modals */}
       {isModalOpen && <AddCategory onClose={() => setIsModalOpen(false)} />}
 
-      {/* Modal Suppression */}
-      {isDeleteModalOpen && selectedCategory&& (
-        <DeleteCategory
-          onClose={() => setIsDeleteModalOpen(false)} 
-          onSucces={confirmDelete} 
-        />
+      {isDeleteModalOpen && selectedCategory && (
+        <DeleteCategory onClose={() => setIsDeleteModalOpen(false)} onSucces={confirmDelete} />
       )}
-      
 
-      {/* Modal Modification */}
-      {isEditModalOpen &&  selectedCategory &&(
-        <EditCategory 
-        category={selectedCategory}
-    onClose={() => setIsEditModalOpen(false)} />
+      {isEditModalOpen && selectedCategory && (
+        <EditCategory category={selectedCategory} onClose={() => setIsEditModalOpen(false)} />
       )}
     </div>
   );

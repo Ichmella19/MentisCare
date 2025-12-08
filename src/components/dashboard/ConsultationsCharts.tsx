@@ -39,12 +39,12 @@ export default function ConsultationsChart() {
     }, []);
   
   return (
-    <div className="bg-white text-black dark:bg-black dark:text-whitep-6 rounded-xl shadow border">
+    <div className="bg-white text-black dark:bg-black dark:text-white p-6 rounded-xl shadow border">
       <h3 className="text-lg font-semibold mb-4">
         Consultations par mois
       </h3>
 
-      <LineChart width={750} height={300} data={data}>
+      <LineChart width={600} height={300} data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
         <YAxis />

@@ -83,6 +83,7 @@ export async function editUser(id: string, name: string, email: string, role: st
     return { success: true, message: "Utilisateur mis à jour avec succès." };
 }
 export async function deleteUser(id: string) {
+    // Vérifier si l'utilisateur existe
     const user = await prisma.user.findUnique({
         where: { id },
     });
@@ -91,9 +92,27 @@ export async function deleteUser(id: string) {
         return { success: false, message: "Utilisateur non trouvé." };
     }
 
-    await prisma.user.delete({
-        where: { id },
+    // Vérifier s'il possède des calendriers liés
+    const count = await prisma.calendar.count({
+        where: { userId: id },
     });
-    
-    return { success: true, message: "Utilisateur supprimé avec succès." };
+
+    if (count > 0) {
+        return { 
+            success: false, 
+            message: "Impossible de supprimer ce utilisateur car il possède des calendriers liés." 
+        };
+    }
+
+    try {
+        // Supprimer l'utilisateur
+        await prisma.user.delete({
+            where: { id },
+        });
+
+        return { success: true, message: "Utilisateur supprimé avec succès." };
+    } catch (error) {
+        console.error("Erreur lors de la suppression :", error);
+        return { success: false, message: "Erreur serveur lors de la suppression." };
+    }
 }

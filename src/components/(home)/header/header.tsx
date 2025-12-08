@@ -18,7 +18,7 @@ const Header: React.FC = () => {
   const navLinks = [
     { label: "Accueil", href: "/" },
     { label: "À Propos", href: "/aboutUs" },
-    { label: "Contact", href: "/contact" },
+    { label: "Espace Chatbot", href: "/espace Chatbot" },
     { label: "Réservation", href: "/reservation" },
   ];
 

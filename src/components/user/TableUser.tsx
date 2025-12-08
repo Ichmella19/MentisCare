@@ -145,7 +145,7 @@ export default function TableUser() {
       {/* Card */}
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-lg p-4 md:p-6">
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
-          <h2 className="text-lg font-semibold">Historiques des Utilisateurs</h2>
+          <h2 className="text-lg font-semibold">Liste des Utilisateurs</h2>
           <button
             className="px-4 py-2 bg-[#08A3DC] text-white rounded-md hover:bg-[#067aa6] w-full sm:w-auto"
             onClick={() => setIsModalOpen(true)}
@@ -169,7 +169,7 @@ export default function TableUser() {
         <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
           {loading ? (
             <div className="flex flex-col items-center justify-center py-10">
-              <div className="w-10 h-10 border-4 border-[#d61353]/30 border-t-[#d61353] rounded-full animate-spin"></div>
+              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC]rounded-full animate-spin"></div>
               <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
                 Chargement des utilisateurs...
               </p>

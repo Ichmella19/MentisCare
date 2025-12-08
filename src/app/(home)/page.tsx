@@ -98,9 +98,9 @@
         <button
             className="px-6 py-3 rounded-xl shadow-lg hover:opacity-90 transition-opacity bg-white dark:bg-black text-black dark:text-white"
             style={{ fontFamily: "Montserrat, sans-serif" }}
-            onClick={() => router.push("/contact")}
+            onClick={() => router.push("/espace Chatbot")}
         >
-            Besoin d’aide ? Contactez-nous
+        Accéder au Chatbot
         </button>
         </div>
     </motion.div>
