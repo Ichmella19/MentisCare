@@ -96,12 +96,7 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
                 {patient.adresse}
               </p>
             </div>
-             <div>
-              <h3 className="text-sm font-medium text-gray-500">Matricule du patient</h3>
-              <p className="text-black dark:text-white">
-                {patient.matricule}
-              </p>
-            </div>
+            
              <div>
               <h3 className="text-sm font-medium text-gray-500">Pays</h3>
               <p className="text-black dark:text-white">

@@ -56,6 +56,15 @@ export default function NotificationsPage() {
         <div className="p-6 bg-white dark:bg-black text-black dark:text-white" style={{ fontFamily: 'Montserrat, sans-serif' }}>
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold">Notifications</h1>
+
+                <Link href="/admin/portfeuille">
+                    <button
+                        className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        Voir le portefeuille
+                    </button>
+                </Link>
+
                 <button
                     onClick={handleMarkAllRead}
                     className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
@@ -64,7 +73,7 @@ export default function NotificationsPage() {
                 </button>
             </div>
 
-            {/* Grille avec somme et nombre */}
+            {/* Grille */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
                 <div className="shadow-md rounded-xl p-6 bg-gray-50 dark:bg-gray-900">
                     <h2 className="text-lg font-semibold">Total Notifications</h2>
@@ -90,7 +99,12 @@ export default function NotificationsPage() {
             {/* Tableau */}
             <div className="shadow-md rounded-xl overflow-hidden bg-white dark:bg-gray-900">
                 {loading ? (
-                    <div className="p-8 text-center text-gray-500">Chargement...</div>
+                   <div className="flex flex-col items-center justify-center py-10">
+              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC]rounded-full animate-spin"></div>
+                        <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
+                            Chargement des notifications...
+                        </p>
+                    </div>
                 ) : filteredNotifications.length === 0 ? (
                     <div className="p-8 text-center text-gray-500">
                         Aucune notification trouvée.
@@ -112,8 +126,9 @@ export default function NotificationsPage() {
                                 {filteredNotifications.map((notification) => (
                                     <tr
                                         key={notification.id}
-                                        className={`hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${!notification.read ? "bg-blue-50 dark:bg-blue-900/10" : ""
-                                            }`}
+                                        className={`hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors ${
+                                            !notification.read ? "bg-blue-50 dark:bg-blue-900/10" : ""
+                                        }`}
                                     >
                                         <td className="p-4 border-b dark:border-gray-700 font-medium">
                                             {notification.title}
@@ -123,10 +138,11 @@ export default function NotificationsPage() {
                                         </td>
                                         <td className="p-4 border-b dark:border-gray-700">
                                             <span
-                                                className={`px-2 py-1 rounded-full text-xs font-semibold ${notification.type === "ASSIGNMENT"
+                                                className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                    notification.type === "ASSIGNMENT"
                                                         ? "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
                                                         : "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
-                                                    }`}
+                                                }`}
                                             >
                                                 {notification.type}
                                             </span>

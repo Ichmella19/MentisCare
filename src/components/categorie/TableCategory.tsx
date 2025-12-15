@@ -10,9 +10,6 @@ import AddCategory from "@/components/categorie/AddCategory";
 import DeleteCategory from "@/components/categorie/DeleteCategory";
 import EditCategory from "@/components/categorie/EditCategory";
 
-// ----------------------------------------------------------------------
-// TYPES
-// ----------------------------------------------------------------------
 
 interface Category {
   id: number;
@@ -20,9 +17,6 @@ interface Category {
   createdAt: string;
 }
 
-// ----------------------------------------------------------------------
-// COMPOSANT
-// ----------------------------------------------------------------------
 
 export default function TableCategory() {
   const router = useRouter();

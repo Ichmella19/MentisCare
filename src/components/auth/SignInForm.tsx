@@ -46,7 +46,7 @@ const onSubmit = async (
   if (result?.error) {
     toast.error("Erreur de connexion :");
   } else {
-    toast.success("Bienvenu sur notre plateforme");
+    toast.success("Bienvenu sur notre plateforme MentisCare !");
     
   const user = session?.user as ExtendedUser | undefined;
   const role = user?.role;

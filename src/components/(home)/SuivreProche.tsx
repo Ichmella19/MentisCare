@@ -1,15 +1,16 @@
 "use client";
+import { toast } from "react-toastify";
 
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import Header from "./header/header";
 import Footer from "./footer/footer";
 import { suivi } from "@/app/(home)/suivreproche/action";
-import { email, int, set } from "zod";
 import DetailProcheModal from "@/components/(home)/DetailProche";
 
 type Suivi = {
   id: number;
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   user: any;
   description: string;
   prescription: string;
@@ -41,6 +42,7 @@ export default function SuiviProchePage() {
   const [lastSuivi, setlastSuivi] = useState<Suivi>(); // Pour stocker le dernier suivi
    const [selectedSuivi, setSelectedSuivi] = useState<Suivi | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [error, setError] = useState("");
 
   const openModal = (suivi: Suivi) => {
     setSelectedSuivi(suivi);
@@ -52,56 +54,89 @@ export default function SuiviProchePage() {
     setIsModalOpen(false);
   };
 
-  const handleSearch = async () => {
-    // pour l’instant on ne fait que simuler
-    if (matricule.trim() !== "") {
-      setShowData(true);
-      const result = await suivi(matricule);
-      
-        const apiPatient = result.data?.patient!;
-        setPatientData({
-          id: apiPatient.id,
-          name: apiPatient.name!,
-          matricule: apiPatient.matricule,
-          dateNaissance: apiPatient.dateNaissance,
-          sexe: apiPatient.sexe,
-          email: apiPatient.email!,
-          phone: apiPatient.phone!,
-          adresse: apiPatient.adresse,
-          pays: apiPatient.pays,
-          suivis: apiPatient.Suivi
-            ? apiPatient.Suivi.map((suivi: any) => ({
-                id: suivi.id,
-                user: suivi.user,
-                description: suivi.description,
-                prescription: suivi.prescription,
-                fichier: suivi.fichier,
-                createdAt: suivi.createdAt instanceof Date ? suivi.createdAt.toISOString() : suivi.createdAt,
-                updatedAt: suivi.updatedAt instanceof Date ? suivi.updatedAt.toISOString() : suivi.updatedAt,
-                patientId: suivi.patientId,
-              }))
-            : [],
-          createdAt: apiPatient.createdAt instanceof Date ? apiPatient.createdAt.toISOString() : apiPatient.createdAt,
-          updatedAt: apiPatient.updatedAt instanceof Date ? apiPatient.updatedAt.toISOString() : apiPatient.updatedAt,
-          
-        });
-        setlastSuivi(
-          result.data?.lastSuivi
-            ? {
-                ...result.data?.lastSuivi,
-                createdAt: result.data?.lastSuivi.createdAt instanceof Date
-                  ? result.data?.lastSuivi.createdAt.toISOString()
-                  : result.data?.lastSuivi.createdAt,
-                updatedAt: result.data?.lastSuivi.updatedAt instanceof Date
-                  ? result.data?.lastSuivi.updatedAt.toISOString()
-                  : result.data?.lastSuivi.updatedAt,
-              }
-            : undefined
-        );
-    } else {
-      setShowData(false);
-    }
-  };
+ const handleSearch = async () => {
+  setError(""); // reset erreur
+
+  if (matricule.trim() === "") {
+    toast.error("Veuillez entrer un matricule.");
+    setShowData(false);
+    return;
+  }
+
+  setShowData(true);
+
+  const result = await suivi(matricule);
+
+  // Vérification si aucun patient n’est trouvé
+  const apiPatient = result.data?.patient;
+
+  if (!apiPatient) {
+    setShowData(false);
+    setPatientData(undefined);
+    setlastSuivi(undefined);
+
+    setError("Aucun patient trouvé avec ce matricule.");
+    toast.error("Aucun patient trouvé avec ce matricule.");
+    return;
+  }
+
+  // Si patient trouvé : remplir les données
+  setPatientData({
+    id: apiPatient.id,
+    name: apiPatient.name ?? "",
+    matricule: apiPatient.matricule,
+    dateNaissance: apiPatient.dateNaissance,
+    sexe: apiPatient.sexe,
+    email: apiPatient.email ?? "",
+    phone: apiPatient.phone ?? "",
+    adresse: apiPatient.adresse,
+    pays: apiPatient.pays,
+    suivis: apiPatient.Suivi
+     
+ // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ? apiPatient.Suivi.map((suivi: any) => ({
+          id: suivi.id,
+          user: suivi.user,
+          description: suivi.description,
+          prescription: suivi.prescription,
+          fichier: suivi.fichier,
+          createdAt:
+            suivi.createdAt instanceof Date
+              ? suivi.createdAt.toISOString()
+              : suivi.createdAt,
+          updatedAt:
+            suivi.updatedAt instanceof Date
+              ? suivi.updatedAt.toISOString()
+              : suivi.updatedAt,
+          patientId: suivi.patientId,
+        }))
+      : [],
+    createdAt:
+      apiPatient.createdAt instanceof Date
+        ? apiPatient.createdAt.toISOString()
+        : apiPatient.createdAt,
+    updatedAt:
+      apiPatient.updatedAt instanceof Date
+        ? apiPatient.updatedAt.toISOString()
+        : apiPatient.updatedAt,
+  });
+
+  setlastSuivi(
+    result.data?.lastSuivi
+      ? {
+          ...result.data.lastSuivi,
+          createdAt:
+            result.data.lastSuivi.createdAt instanceof Date
+              ? result.data.lastSuivi.createdAt.toISOString()
+              : result.data.lastSuivi.createdAt,
+          updatedAt:
+            result.data.lastSuivi.updatedAt instanceof Date
+              ? result.data.lastSuivi.updatedAt.toISOString()
+              : result.data.lastSuivi.updatedAt,
+        }
+      : undefined
+  );
+};
 
   return (
    <div className= "bg-white text-black dark:bg-black dark:text-white"style={{ fontFamily: 'Montserrat, sans-serif' }}>

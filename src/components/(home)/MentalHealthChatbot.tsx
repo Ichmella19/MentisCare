@@ -173,7 +173,7 @@ export default function MentalHealthChatbot() {
                     Assistant MentisCare
                 </h2>
                 <p className="text-blue-100 text-sm">
-                    Votre espace d'écoute et de soutien
+                    Votre espace d&apos;écoute et de soutien
                 </p>
                 </div>
             </div>
@@ -259,7 +259,7 @@ export default function MentalHealthChatbot() {
                         <div className="flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
                         <span className="text-sm text-gray-600">
-                            En train d'écrire...
+                            En train d&apos;écrire...
                         </span>
                         </div>
                     </div>
@@ -294,7 +294,7 @@ export default function MentalHealthChatbot() {
                 </Button>
             </form>
             <p className="text-xs text-gray-500 mt-3 text-center">
-                💙 Vos conversations sont confidentielles et sécurisées
+                Vos conversations sont confidentielles et sécurisées
             </p>
             </div>
         </Card>
