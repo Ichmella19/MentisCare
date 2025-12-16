@@ -27,25 +27,26 @@ export default function MentalHealthChatbot() {
       timestamp: new Date(),
     },
   ]);
+
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll vers le bas quand de nouveaux messages arrivent
   useEffect(() => {
     if (scrollAreaRef.current) {
-      const scrollContainer = scrollAreaRef.current.querySelector(
+      const viewport = scrollAreaRef.current.querySelector(
         "[data-radix-scroll-area-viewport]"
       );
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight;
       }
     }
   }, [messages]);
 
   const validateMentalHealthTopic = (message: string): boolean => {
-    const mentalHealthKeywords = [
+    const keywords = [
       "stress",
       "anxiété",
       "dépression",
@@ -59,28 +60,19 @@ export default function MentalHealthChatbot() {
       "fatigue",
       "burnout",
       "thérapie",
-      "psychologie",
       "méditation",
-      "relaxation",
       "confiance",
-      "estime",
       "solitude",
       "relation",
       "travail",
-      "vie",
       "sentiment",
       "moral",
       "aide",
       "soutien",
-      "parler",
-      "écoute",
     ];
 
-    const messageLower = message.toLowerCase();
-    return (
-      mentalHealthKeywords.some((keyword) => messageLower.includes(keyword)) ||
-      message.length < 50 // Permet les salutations courtes
-    );
+    const msg = message.toLowerCase();
+    return keywords.some((k) => msg.includes(k)) || message.length < 50;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -99,57 +91,53 @@ export default function MentalHealthChatbot() {
     setIsLoading(true);
 
     try {
-      // Vérifier si le message concerne la santé mentale
       if (!validateMentalHealthTopic(input)) {
-        const offTopicResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content:
-            "Je suis désolé, mais je suis spécialisé uniquement dans les discussions sur la santé mentale et le bien-être émotionnel. Pouvez-vous me parler de ce que vous ressentez ou de préoccupations liées à votre bien-être mental ?",
-          timestamp: new Date(),
-        };
-        setMessages((prev) => [...prev, offTopicResponse]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: (Date.now() + 1).toString(),
+            role: "assistant",
+            content:
+              "Je suis spécialisé uniquement dans la santé mentale et le bien-être émotionnel. Pouvez-vous me parler de ce que vous ressentez ?",
+            timestamp: new Date(),
+          },
+        ]);
         setIsLoading(false);
         return;
       }
 
-      // Appel à l'API (remplacez par votre propre endpoint)
       const response = await fetch("/api/chatbot", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: messages
-            .concat(userMessage)
-            .map((m) => ({ role: m.role, content: m.content })),
+          messages: messages.concat(userMessage).map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Erreur lors de la communication avec le serveur");
-      }
-
       const data = await response.json();
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: data.message,
-        timestamp: new Date(),
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Erreur:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content:
-          "Je suis désolé, une erreur s'est produite. Pouvez-vous réessayer ?",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 2).toString(),
+          role: "assistant",
+          content: data.message,
+          timestamp: new Date(),
+        },
+      ]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: (Date.now() + 3).toString(),
+          role: "assistant",
+          content: "Une erreur est survenue. Veuillez réessayer.",
+          timestamp: new Date(),
+        },
+      ]);
     } finally {
       setIsLoading(false);
       inputRef.current?.focus();
@@ -157,149 +145,126 @@ export default function MentalHealthChatbot() {
   };
 
   return (
-    
-    <div className= "bg-white text-black dark:bg-black dark:text-white"style={{ fontFamily: 'Montserrat, sans-serif' }}>
+    <div
+      className="bg-white text-black dark:bg-black dark:text-white"
+      style={{ fontFamily: "Montserrat, sans-serif" }}
+    >
       <Header />
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 my-5">
-        <Card className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl border-0 bg-white/80 backdrop-blur-sm">
-            {/* Header */}
-            <div className="p-6 border-b bg-[#2E86AB] rounded-t-lg">
+
+      <div className="flex items-center justify-center min-h-screen bg-gray-100 my-5">
+        <Card className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl border bg-white">
+          {/* Header */}
+          <div className="p-6 border-b bg-[#2E86AB] rounded-t-lg">
             <div className="flex items-center gap-3">
-                <div className="p-3 bg-white/20 rounded-full backdrop-blur-sm">
+              <div className="p-3 bg-white/20 rounded-full">
                 <Heart className="w-6 h-6 text-white" />
-                </div>
-                <div>
+              </div>
+              <div>
                 <h2 className="text-2xl font-bold text-white">
-                    Assistant MentisCare
+                  Assistant MentisCare
                 </h2>
-                <p className="text-blue-100 text-sm">
-                    Votre espace d&apos;écoute et de soutien
+                <p className="text-white/80 text-sm">
+                  Votre espace d’écoute et de soutien
                 </p>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
 
-            {/* Messages Area */}
-            <ScrollArea ref={scrollAreaRef} className="flex-1 px-6 h-1/2">
+          {/* Messages */}
+          <ScrollArea ref={scrollAreaRef} className="flex-1 px-6">
             <div className="space-y-6">
-                {messages.map((message) => (
+              {messages.map((message) => (
                 <div
-                    key={message.id}
-                    className={cn(
-                    "flex gap-3 animate-in fade-in-0 slide-in-from-bottom-4 duration-300",
-                    message.role === "user" ? "flex-row-reverse" : "flex-row"
-                    )}
+                  key={message.id}
+                  className={cn(
+                    "flex gap-3",
+                    message.role === "user"
+                      ? "flex-row-reverse"
+                      : "flex-row"
+                  )}
                 >
-                    <Avatar
-                    className={cn(
-                        "w-10 h-10",
-                        message.role === "assistant"
-                        ? "bg-gradient-to-br from-blue-500 to-indigo-600"
-                        : "bg-gradient-to-br from-purple-500 to-pink-600"
-                    )}
-                    >
+                  <Avatar className="w-10 h-10 bg-[#2E86AB]">
                     <AvatarFallback className="bg-transparent">
-                        {message.role === "assistant" ? (
+                      {message.role === "assistant" ? (
                         <Bot className="w-5 h-5 text-white" />
-                        ) : (
+                      ) : (
                         <User className="w-5 h-5 text-white" />
-                        )}
+                      )}
                     </AvatarFallback>
-                    </Avatar>
+                  </Avatar>
 
+                  <div className="max-w-[80%]">
                     <div
-                    className={cn(
-                        "flex-1 max-w-[80%]",
-                        message.role === "user" ? "items-end" : "items-start"
-                    )}
-                    >
-                    <div
-                        className={cn(
-                        "rounded-2xl px-4 py-3 shadow-md",
+                      className={cn(
+                        "rounded-2xl px-4 py-3 shadow",
                         message.role === "assistant"
-                            ? "bg-white border border-gray-200"
-                            : "bg-gradient-to-r from-blue-600 to-indigo-600 text-white"
-                        )}
+                          ? "bg-white border"
+                          : "bg-[#2E86AB] text-white"
+                      )}
                     >
-                        <p
-                        className={cn(
-                            "text-sm leading-relaxed whitespace-pre-wrap",
-                            message.role === "assistant"
-                            ? "text-gray-800"
-                            : "text-white"
-                        )}
-                        >
+                      <p className="text-sm whitespace-pre-wrap">
                         {message.content}
-                        </p>
+                      </p>
                     </div>
-                    <p
-                        className={cn(
-                        "text-xs text-gray-500 mt-1 px-2",
-                        message.role === "user" ? "text-right" : "text-left"
-                        )}
-                    >
-                        {message.timestamp.toLocaleTimeString("fr-FR", {
+                    <p className="text-xs text-gray-500 mt-1">
+                      {message.timestamp.toLocaleTimeString("fr-FR", {
                         hour: "2-digit",
                         minute: "2-digit",
-                        })}
+                      })}
                     </p>
-                    </div>
+                  </div>
                 </div>
-                ))}
+              ))}
 
-                {isLoading && (
-                <div className="flex gap-3 animate-in fade-in-0">
-                    <Avatar className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600">
+              {isLoading && (
+                <div className="flex gap-3">
+                  <Avatar className="w-10 h-10 bg-[#2E86AB]">
                     <AvatarFallback className="bg-transparent">
-                        <Bot className="w-5 h-5 text-white" />
+                      <Bot className="w-5 h-5 text-white" />
                     </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                    <div className="bg-white border border-gray-200 rounded-2xl px-4 py-3 shadow-md inline-block">
-                        <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                        <span className="text-sm text-gray-600">
-                            En train d&apos;écrire...
-                        </span>
-                        </div>
+                  </Avatar>
+                  <div className="bg-white border rounded-2xl px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin text-[#2E86AB]" />
+                      <span className="text-sm text-gray-600">
+                        En train d’écrire…
+                      </span>
                     </div>
-                    </div>
+                  </div>
                 </div>
-                )}
+              )}
             </div>
-            </ScrollArea>
+          </ScrollArea>
 
-            {/* Input Area */}
-            <div className="p-6 border-t bg-gray-50/50 backdrop-blur-sm">
+          {/* Input */}
+          <div className="p-6 border-t bg-gray-50">
             <form onSubmit={handleSubmit} className="flex gap-3">
-                <Input
+              <Input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Partagez ce que vous ressentez..."
-                className="flex-1 rounded-full px-6 py-6 text-base border-2 border-gray-200 focus:border-blue-500 transition-all"
+                placeholder="Exprimez ce que vous ressentez..."
+                className="flex-1 rounded-full px-6 py-6 border-2"
                 disabled={isLoading}
-                />
-                <Button
+              />
+              <Button
                 type="submit"
-                size="lg"
                 disabled={!input.trim() || isLoading}
-                className="rounded-full px-8 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg transition-all"
-                >
+                className="rounded-full px-8 bg-[#2E86AB] hover:bg-[#276F8F]"
+              >
                 {isLoading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                    <Send className="w-5 h-5" />
+                  <Send className="w-5 h-5" />
                 )}
-                </Button>
+              </Button>
             </form>
             <p className="text-xs text-gray-500 mt-3 text-center">
-                Vos conversations sont confidentielles et sécurisées
+              Vos conversations sont confidentielles et sécurisées
             </p>
-            </div>
+          </div>
         </Card>
-        </div>
-    
-    </div> 
+      </div>
+    </div>
   );
 }

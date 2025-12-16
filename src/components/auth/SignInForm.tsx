@@ -57,7 +57,6 @@ const onSubmit = async (
     }
   }
   setSubmitting(false);
-  setSubmitting(false);
 
 };
 
@@ -153,13 +152,23 @@ const onSubmit = async (
                
               </div>
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-2 bg-[#08A3DC] text-white rounded hover:bg-[#0b91c6] transition duration-200"
-              >
-                {isSubmitting ? "Connexion..." : "Se connecter"}
-              </button>  
+            <button
+  type="submit"
+  disabled={isSubmitting}
+  className={`w-full py-2 flex items-center justify-center gap-2 bg-[#08A3DC] text-white rounded hover:bg-[#0b91c6] transition duration-200
+    ${isSubmitting ? "opacity-70 cursor-not-allowed" : ""}
+  `}
+>
+  {isSubmitting ? (
+    <>
+      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+      Connexion...
+    </>
+  ) : (
+    "Se connecter"
+  )}
+</button>
+
             </Form>
           )}
         </Formik>
