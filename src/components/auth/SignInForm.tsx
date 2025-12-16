@@ -50,11 +50,13 @@ const onSubmit = async (
     
   const user = session?.user as ExtendedUser | undefined;
   const role = user?.role;
-    if (role === 'ADMIN') {
-      router.push("/admin/dashboard");
-    }else{
-      router.push("/admin/dashboard/personal");
-    }
+    // if (role === 'ADMIN') {
+    //   router.push("/admin/dashboard");
+    // }else{
+    //   router.push("/admin/dashboard/personal");
+    // }
+      router.push("dashboard/profile");
+
   }
   setSubmitting(false);
   setSubmitting(false);

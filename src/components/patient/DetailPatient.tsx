@@ -106,6 +106,13 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
             </div>
 
             <div>
+              <h3 className="text-sm font-medium text-gray-500">Matricule</h3>
+              <p className="text-black dark:text-white">
+                {patient.matricule}
+              </p>
+            </div>
+
+            <div>
               <h3 className="text-sm font-medium text-gray-500">Personnel traitant</h3>
               <p className="text-black dark:text-white">
                 {patient.user ? patient.user.name : "Non assigné"}
