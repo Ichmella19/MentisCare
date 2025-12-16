@@ -46,6 +46,7 @@ export async function updateProfile(
 //     return { success: true, message: "Mot de passe mis à jour avec succès" };
 // }
 // action.ts (avec débogage)
+
 export async function updatePassword(oldPassword: string, newPassword: string) {
   try {
     const session = await auth();
@@ -81,6 +82,8 @@ export async function updatePassword(oldPassword: string, newPassword: string) {
 
     // Hachage du nouveau mot de passe
     const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    console.log("Résultat :", hashedPassword);
     
     // Mise à jour dans la base de données
     await prisma.user.update({
