@@ -80,7 +80,7 @@ export async function updatePassword(oldPassword: string, newPassword: string) {
     }
 
     // Hachage du nouveau mot de passe
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
     
     // Mise à jour dans la base de données
     await prisma.user.update({

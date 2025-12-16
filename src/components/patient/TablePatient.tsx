@@ -24,7 +24,7 @@ interface Patient {
   phone: string;
   adresse: string;
   pays: string;
-    matricule: string;
+  matricule: string;
 
   sexe: string;
   dateNaissance: string;

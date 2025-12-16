@@ -22,7 +22,10 @@ export async function sendOtp(email: string) {
         // Création du message
         const sendGridMail = {
             to: user.email,
-            from: "ichmellatognide@gmail.com",
+            from: {
+                email: "ichmellatognide@gmail.com",
+                name: "Mentiscare",
+            },
             templateId: "d-3e3c19f799484fcf93504667a50b2775",
             dynamic_template_data: {
                 code: otp,
