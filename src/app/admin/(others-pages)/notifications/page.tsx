@@ -9,7 +9,7 @@ interface Notification {
     message: string;
     read: boolean;
     createdAt: Date;
-    link?: string;
+    link: string | null; 
     type: string;
 }
 
@@ -99,8 +99,8 @@ export default function NotificationsPage() {
             {/* Tableau */}
             <div className="shadow-md rounded-xl overflow-hidden bg-white dark:bg-gray-900">
                 {loading ? (
-                   <div className="flex flex-col items-center justify-center py-10">
-              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC]rounded-full animate-spin"></div>
+                    <div className="flex flex-col items-center justify-center py-10">
+                        <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC] rounded-full animate-spin"></div>
                         <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
                             Chargement des notifications...
                         </p>

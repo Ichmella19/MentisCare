@@ -1,11 +1,5 @@
-"use client";
-
-import TablePatient from "@/components/patient/TablePatient";
+import PatientsClient from "./PatientsClient";
 
 export default function PatientsPage() {
-  return (
-    <div>
-        <TablePatient />
-    </div>
-  );
+  return <PatientsClient />;
 }

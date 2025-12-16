@@ -5,11 +5,13 @@ import * as Yup from "yup";
 import { toast } from "react-toastify";
 import { editCategory } from "@/app/admin/(others-pages)/categories/action";
 
+// ✅ Type Category corrigé pour correspondre à Prisma
 type Category = {
   id: number;
   name: string;
-  createdAt: string;
-  // matricule: string;
+  identifiantUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 type EditCategoryProps = {
@@ -36,12 +38,9 @@ export default function EditCategory({ category, onClose, onSuccess }: EditCateg
           enableReinitialize
           initialValues={{
             name: category.name || "",
-           
-
           }}
           validationSchema={Yup.object({
             name: Yup.string().required("Nom obligatoire"),
-           
           })}
           onSubmit={async (values, { setSubmitting }) => {
             setSubmitting(true);
@@ -49,18 +48,19 @@ export default function EditCategory({ category, onClose, onSuccess }: EditCateg
               const response = await editCategory(
                 category.id,
                 values.name,
-
               );
 
               if (response.success) {
-                toast.success("Patient mis à jour avec succès !");
-                  window.location.href = "/admin/categories";
+                toast.success("Catégorie mise à jour avec succès !");
+                window.location.href = "/admin/categories";
+
                 if (onSuccess) {
                   onSuccess({
                     ...category,
                     ...values,
                   });
                 }
+
                 onClose();
               } else {
                 toast.error(response.message || "Erreur lors de la mise à jour.");
@@ -77,14 +77,13 @@ export default function EditCategory({ category, onClose, onSuccess }: EditCateg
             <Form className="space-y-4">
               <Field
                 name="name"
-                placeholder="Nom complet"
+                placeholder="Nom de la catégorie"
                 className="w-full border px-3 py-2 rounded"
               />
               {errors.name && touched.name && (
                 <p className="text-red-500 text-sm">{errors.name}</p>
               )}
 
-              
               <div className="flex flex-col sm:flex-row justify-end gap-2">
                 <button
                   type="button"

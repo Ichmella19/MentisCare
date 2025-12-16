@@ -1,0 +1,10 @@
+# Ignorer Prisma
+src/generated/
+prisma/generated/
+**/generated/**
+
+# Ignorer les fichiers compilés
+node_modules/
+.next/
+dist/
+build/

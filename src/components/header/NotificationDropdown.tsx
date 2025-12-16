@@ -1,18 +1,21 @@
 "use client";
-import Image from "next/image";
+
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { getNotifications, markAsRead, markAllAsRead } from "@/app/actions/notification";
 
+// ✅ Type Notification corrigé pour correspondre au backend
 interface Notification {
   id: number;
   title: string;
   message: string;
   read: boolean;
   createdAt: Date;
-  link?: string;
+  updatedAt: Date;
+  userId: string;
+  link: string | null;   // ✅ Correction ici
   type: string;
 }
 
@@ -31,7 +34,7 @@ export default function NotificationDropdown() {
 
   useEffect(() => {
     fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000); // Poll every 30 seconds
+    const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -43,19 +46,16 @@ export default function NotificationDropdown() {
     setIsOpen(false);
   }
 
-  const handleNotificationClick = async (id: number, link?: string) => {
+  const handleNotificationClick = async (id: number) => {
     await markAsRead(id);
     fetchNotifications();
     closeDropdown();
-    if (link) {
-      // Navigate to link if needed, Link component handles it
-    }
   };
 
   const handleMarkAllRead = async () => {
     await markAllAsRead();
     fetchNotifications();
-  }
+  };
 
   return (
     <div className="relative font-montserrat">
@@ -64,11 +64,13 @@ export default function NotificationDropdown() {
         onClick={toggleDropdown}
       >
         <span
-          className={`absolute right-0 top-0.5 z-10 h-2 w-2 rounded-full bg-orange-400 ${unreadCount === 0 ? "hidden" : "flex"
-            }`}
+          className={`absolute right-0 top-0.5 z-10 h-2 w-2 rounded-full bg-orange-400 ${
+            unreadCount === 0 ? "hidden" : "flex"
+          }`}
         >
           <span className="absolute inline-flex w-full h-full bg-orange-400 rounded-full opacity-75 animate-ping"></span>
         </span>
+
         <svg
           className="fill-current"
           width="20"
@@ -84,6 +86,7 @@ export default function NotificationDropdown() {
           />
         </svg>
       </button>
+
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
@@ -97,29 +100,55 @@ export default function NotificationDropdown() {
             onClick={handleMarkAllRead}
             className="text-gray-500 transition dropdown-toggle dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 text-xs"
           >
-           Tout lire
+            Tout lire
           </button>
         </div>
+
         <ul className="flex flex-col h-auto overflow-y-auto custom-scrollbar">
           {notifications.length === 0 ? (
-            <li className="p-4 text-center text-gray-500">Aucune notification recue</li>
+            <li className="p-4 text-center text-gray-500">Aucune notification reçue</li>
           ) : (
             notifications.map((notification) => (
               <li key={notification.id}>
                 <DropdownItem
-                  onItemClick={() => handleNotificationClick(notification.id, notification.link)}
-                  className={`flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5 ${!notification.read ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                  onItemClick={() =>
+                    handleNotificationClick(notification.id)
+                  }
+                  className={`flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4.5 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5 ${
+                    !notification.read ? "bg-blue-50 dark:bg-blue-900/20" : ""
+                  }`}
                   href={notification.link || "#"}
                 >
                   <span className="relative block w-full h-10 rounded-full z-1 max-w-10 flex items-center justify-center bg-gray-200 dark:bg-gray-700">
-                    {/* Icon based on type */}
-                    {notification.type === 'ASSIGNMENT' ? (
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-blue-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    {notification.type === "ASSIGNMENT" ? (
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 text-blue-500"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                        />
                       </svg>
                     ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-green-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                        stroke="currentColor"
+                        className="w-6 h-6 text-green-500"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
                       </svg>
                     )}
 
@@ -133,9 +162,7 @@ export default function NotificationDropdown() {
                       <span className="font-medium text-gray-800 dark:text-white/90">
                         {notification.title}
                       </span>
-                      <span className="block text-xs">
-                        {notification.message}
-                      </span>
+                      <span className="block text-xs">{notification.message}</span>
                     </span>
 
                     <span className="flex items-center gap-2 text-gray-500 text-theme-xs dark:text-gray-400">
@@ -149,9 +176,10 @@ export default function NotificationDropdown() {
             ))
           )}
         </ul>
+
         <Link
           href="/admin/notifications"
-          className="block  font-montserrat px-4 py-2 mt-3 text-sm font-medium text-center text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+          className="block font-montserrat px-4 py-2 mt-3 text-sm font-medium text-center text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
         >
           Voir toutes les notifications
         </Link>

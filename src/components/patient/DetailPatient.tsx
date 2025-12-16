@@ -14,25 +14,26 @@ type Patient = {
   pays: string;
   sexe: string;
   matricule: string;
-  dateNaissance: string ;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-user: any;
-
+  dateNaissance: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  user: any;
 };
 
 type DetailPatientProps = {
   patient: Patient;
   onClose: () => void;
 };
- 
+
 export default function DetailPatient({ patient, onClose }: DetailPatientProps) {
-   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [isAssignModalOpen, setIsAssignModalOpen] = useState(false); 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-   const handleEditClick = (patient: Patient) => {
+
+  const handleEditClick = (patient: Patient) => {
     setSelectedPatient(patient);
     setIsEditModalOpen(true);
   };
+
   return (
     <div className="fixed inset-0 flex justify-center items-center p-2 sm:p-4 z-50">
       {/* Overlay sombre */}
@@ -96,8 +97,8 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
                 {patient.adresse}
               </p>
             </div>
-            
-             <div>
+
+            <div>
               <h3 className="text-sm font-medium text-gray-500">Pays</h3>
               <p className="text-black dark:text-white">
                 {patient.pays}
@@ -115,33 +116,37 @@ export default function DetailPatient({ patient, onClose }: DetailPatientProps) 
 
         {/* Boutons */}
         <div className="mt-8 flex justify-between gap-3">
-          
           <button
-             onClick={() => setIsAssignModalOpen(true)}
+            onClick={() => setIsAssignModalOpen(true)}
             className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-white transition bg-[#08A3DC]"
           >
-           Assigner un médécin traitant
+            Assigner un médécin traitant
           </button>
+
           <button
-            onClick={() => onClose()}
+            onClick={onClose}
             className="cursor-pointer rounded-lg border border-gray-300 px-4 py-2 text-gray-600 transition hover:bg-gray-100"
           >
             Fermer
           </button>
+
           <button
             onClick={() => handleEditClick(patient)}
-            className="cursor-pointer rounded-lg bg-[#08A3DC] px-4 py-2 text-white transition "
+            className="cursor-pointer rounded-lg bg-[#08A3DC] px-4 py-2 text-white transition"
           >
             Modifier
           </button>
         </div>
       </div>
-       {isEditModalOpen &&  selectedPatient &&(
-              <EditPatient 
-              patient={selectedPatient}
-          onClose={() => setIsEditModalOpen(false)} />
-            )}
-             {isAssignModalOpen && (
+
+      {isEditModalOpen && selectedPatient && (
+        <EditPatient
+          patient={selectedPatient}
+          onClose={() => setIsEditModalOpen(false)}
+        />
+      )}
+
+      {isAssignModalOpen && (
         <AssignDoctorModal
           patientId={patient.id}
           onClose={() => setIsAssignModalOpen(false)}

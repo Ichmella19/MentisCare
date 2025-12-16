@@ -11,11 +11,14 @@ import DeleteCategory from "@/components/categorie/DeleteCategory";
 import EditCategory from "@/components/categorie/EditCategory";
 
 
-interface Category {
+type Category = {
   id: number;
   name: string;
-  createdAt: string;
-}
+  identifiantUrl: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 
 
 export default function TableCategory() {

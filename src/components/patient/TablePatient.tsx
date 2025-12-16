@@ -24,10 +24,12 @@ interface Patient {
   phone: string;
   adresse: string;
   pays: string;
+    matricule: string;
+
   sexe: string;
   dateNaissance: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  user?: any;
+  user: any;
 }
 
 // Type pour les données brutes de l'API (flexible)
@@ -37,6 +39,7 @@ interface RawPatientData {
   email?: string | null;
   phone?: string | null;
   adresse?: string | null;
+  matricule?: string | null;
   pays?: string | null;
   sexe?: string | null;
   dateNaissance?: string | null;
@@ -92,6 +95,7 @@ export default function TablePatient() {
             email: p.email ?? "",
             phone: p.phone ?? "",
             adresse: p.adresse ?? "",
+            matricule: p.matricule ?? "",
             sexe: p.sexe ?? "",
             dateNaissance: p.dateNaissance ?? "",
             user: p.user ?? null,

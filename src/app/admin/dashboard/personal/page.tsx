@@ -1,3 +1,4 @@
+"use client";
 import DoctorStatsCards from "@/components/medecin/DoctorStatsCards";
 import DoctorPatientsChart from "@/components/medecin/DoctorPatientsChart";
 import LastConsultations from "@/components/medecin/LastConsultations";

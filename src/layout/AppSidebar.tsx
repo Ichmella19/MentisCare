@@ -58,7 +58,7 @@ const AppSidebar: React.FC = () => {
         { icon: <PersonIcon />, name: "Gestion des patients", path: "/admin/patients" },
         { icon: <Layers />, name: "Categories", path: "/admin/categories" },
         { name: "Notifications", icon: <BellIcon />, path: "/admin/notifications" },
-        { name: "Portfeuille", icon: <WalletIcon />, path: "/admin/portfeuille" },
+        { name: "Portefeuille", icon: <WalletIcon />, path: "/admin/portfeuille" },
       ];
     } 
     else if (role === 'USER') {
