@@ -55,7 +55,12 @@ const onSubmit = async (
     // }else{
     //   router.push("/admin/dashboard/personal");
     // }
+<<<<<<< HEAD
       router.push("/admin/dashboard/profile");
+=======
+      router.push("admin/dashboard/profile");
+
+>>>>>>> d79820d121d5e2c629c49eefc140a3ccb247e18b
 
   }
   setSubmitting(false);
