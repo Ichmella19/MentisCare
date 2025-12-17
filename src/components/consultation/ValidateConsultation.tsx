@@ -6,8 +6,8 @@ export default function ValidateConsultation ({onClose, onSucces,} : {onClose: (
             onClick={() => onClose()}
           ></div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md md:max-w-lg p-4 sm:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
-            <h3 className="text-lg font-bold mb-4 text-red-600">
-              Voulez-vous vraiment confirmer avoir faire cette consultation ?
+            <h3 className="text-lg font-bold mb-4 text-green-600">
+              Voulez-vous vraiment confirmer avoir fait cette consultation ?
             </h3>
             <p className="mb-6">
               Cliquer sur <span className="font-semibold">Valider</span> pour
@@ -22,7 +22,7 @@ export default function ValidateConsultation ({onClose, onSucces,} : {onClose: (
               </button>
               <button
                 onClick={() => onSucces()}
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full sm:w-auto"
+                className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 w-full sm:w-auto"
               >
                 Valider
               </button>

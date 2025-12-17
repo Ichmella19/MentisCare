@@ -132,7 +132,7 @@ export default function ReservationPage() {
             ))}
             </div>
             <div>
-                { totalPages === 1 ? ''
+                { totalPages === 2 ? ''
                     :<Paginate pages ={totalPages} currentPage={page} path="/reservation" param={param} />
                 }
             </div>

@@ -153,8 +153,8 @@ export default function TableConsultation() {
         {/* TABLE / LOADER */}
         <div className="overflow-x-auto bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-10">
-              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC] rounded-full animate-spin"></div>
+           <div className="flex flex-col items-center justify-center py-10">
+              <div className="w-10 h-10 border-4 border-[#08A3DC]/30 border-t-[#08A3DC]rounded-full animate-spin"></div>
               <p className="mt-3 text-gray-600 dark:text-gray-300 font-medium">
                 Chargement des consultations...
               </p>

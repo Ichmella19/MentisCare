@@ -16,7 +16,7 @@ export default function SuccesDon() {
         </Link>
       <CheckCircle className="text-green-600 w-16 h-16 mb-4" />
       <h1 className="text-2xl font-bold text-green-700 mb-2">
-        Votre don a bien été effectué ✅
+        Votre don a bien été effectué !
       </h1>
       <p className="text-gray-700">
         Merci beaucoup , l’équipe <strong>MentisCare</strong> vous remercie pour votre don.

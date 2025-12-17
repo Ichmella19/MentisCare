@@ -8,7 +8,7 @@ export default function DeleteSuivi ({onClose, onSucces,}: {onClose: () => void;
           ></div>
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-xs sm:max-w-md md:max-w-lg p-4 sm:p-6 relative z-10 overflow-y-auto max-h-[90vh]">
             <h3 className="text-lg font-bold mb-4 text-red-600">
-              Voulez-vous vraiment supprimer  ?
+              Voulez-vous vraiment supprimer les détails du suivi de ce patient ?
             </h3>
             <p className="mb-6">
               Cliquer sur <span className="font-semibold">Valider</span> pour

@@ -121,7 +121,6 @@ export default function ConsultationDetailsPage() {
                         <button 
                         onClick={ () => handleValidateClick(r)}
                         className="border-[#08A3DC] rounded-[5px]  border-1 bg-gray-200 dark:bg-transparent hover:bg-[#08A3DC] hover:text-white transition">
-                        {/* Replace Tool with a valid icon, e.g. FontAwesome or Heroicons */}
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.364-6.364a2 2 0 112.828 2.828L11.828 15.828a4 4 0 01-5.656 0 4 4 0 010-5.656l6.364-6.364a2 2 0 112.828 2.828L9 13z" />
                         </svg>

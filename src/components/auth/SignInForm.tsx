@@ -55,7 +55,7 @@ const onSubmit = async (
     // }else{
     //   router.push("/admin/dashboard/personal");
     // }
-      router.push("dashboard/profile");
+      router.push("/admin/dashboard/profile");
 
   }
   setSubmitting(false);

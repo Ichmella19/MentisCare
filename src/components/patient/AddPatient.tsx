@@ -71,7 +71,7 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
                      }
                    }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched ,isSubmitting}) => (
             <Form className="space-y-4">
               <Field
                 name="name"
@@ -150,11 +150,17 @@ export default function AddPatient({ onClose }: { onClose: () => void }) {
                   Annuler
                 </button>
                 <button
-                  type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full sm:w-auto"
-                >
-                  Valider
-                </button>
+  type="submit"
+  disabled={isSubmitting}
+  className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 w-full sm:w-auto flex items-center justify-center"
+>
+  {isSubmitting ? (
+    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  ) : (
+    "Valider"
+  )}
+</button>
+
               </div>
             </Form>
           )}
