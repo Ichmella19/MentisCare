@@ -57,17 +57,23 @@
 //   matcher: ['/((?!api|static|.*\\..*|_next).*)'],
 // };
 // src/middleware.ts
-import { auth } from './auth'; 
 import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { getToken } from 'next-auth/jwt';
 
-interface ExtendedUser {
+interface ExtendedToken {
   role?: 'ADMIN' | 'USER';
-  [key: string]: unknown;
 }
 
-export default auth(async function middleware(req) {
-  const { auth } = req;
-  const isLoggedIn = !!auth;
+export async function middleware(req: NextRequest) {
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET,
+  }) as ExtendedToken | null;
+
+  const isLoggedIn = !!token;
+  const role = token?.role;
+  const pathname = req.nextUrl.pathname;
 
   const restrictedPaths = [
     '/admin/dashboard',
@@ -76,8 +82,6 @@ export default auth(async function middleware(req) {
     '/admin/categories',
     '/admin/portfeuille',
   ];
-
-  const pathname = req.nextUrl.pathname;
 
   // Pages protégées
   const isProtectedPath = pathname.startsWith('/admin');
@@ -89,25 +93,21 @@ export default auth(async function middleware(req) {
 
   // Page de login
   const isLoginPage = pathname === '/signin';
-  const user = auth?.user as ExtendedUser | undefined;
-  const role = user?.role;
-
   if (isLoginPage && isLoggedIn) {
     if (role === 'ADMIN') return NextResponse.redirect(new URL('/admin/dashboard', req.url));
     return NextResponse.redirect(new URL('/admin/dashboard/personal', req.url));
   }
 
   // Redirection selon rôle
-  const shouldRedirect = role === 'USER' && restrictedPaths.some(path => pathname.startsWith(path));
+  const shouldRedirect =
+    role === 'USER' && restrictedPaths.some(path => pathname.startsWith(path));
   if (shouldRedirect) {
     return NextResponse.redirect(new URL('/admin/dashboard/personal', req.url));
   }
 
   return NextResponse.next();
-});
+}
 
-// ⚠️ Node.js runtime pour utiliser auth/bcryptjs
 export const config = {
   matcher: ['/((?!api|static|.*\\..*|_next).*)'],
-  runtime: 'nodejs',
 };
