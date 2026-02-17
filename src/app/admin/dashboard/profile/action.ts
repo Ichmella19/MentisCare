@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import { auth } from "@/auth"
 
 export async function updateProfile(

@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/db";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 
 const take = 10; // Nombre d'utilisateurs par page
 

@@ -1,7 +1,7 @@
 "use server";
 import prisma from "@/lib/db";
 import sgMail from "@sendgrid/mail";
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 function otpCodeGenerator() {
   return Math.floor(1000 + Math.random() * 9000).toString();  
 }

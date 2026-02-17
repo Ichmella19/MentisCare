@@ -34,7 +34,7 @@
     "@sendgrid/mail": "^8.1.5",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/postcss": "^4.0.9",
-    "@types/bcryptjs": "^2.4.6",
+    "@types/bcrypt": "^2.4.6",
     "apexcharts": "^4.3.0",
     "autoprefixer": "^10.4.20",
     "bcrypt": "^6.0.0",
