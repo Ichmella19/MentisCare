@@ -5,7 +5,7 @@ import AppHeader from "@/layout/AppHeader";
 import AppSidebar from "@/layout/AppSidebar";
 import Backdrop from "@/layout/Backdrop";
 import { SessionProvider } from "next-auth/react";
-import React from "react";
+import React, { Suspense } from "react";
 
 export default function AdminLayout({
   children,
@@ -14,7 +14,6 @@ export default function AdminLayout({
 }) {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
 
-  // Dynamic class for main content margin based on sidebar state
   const mainContentMargin = isMobileOpen
     ? "ml-0"
     : isExpanded || isHovered
@@ -22,21 +21,25 @@ export default function AdminLayout({
     : "lg:ml-[90px]";
 
   return (
-      <div className="min-h-screen xl:flex dark:bg-gray-900">
-        {/* Sidebar and Backdrop */}
-        <SessionProvider>
+    <div className="min-h-screen xl:flex dark:bg-gray-900">
+      <SessionProvider>
         <AppSidebar />
         <Backdrop />
-        {/* Main Content Area */}
+
         <div
-          className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
+          className={`flex-1 transition-all duration-300 ease-in-out ${mainContentMargin}`}
         >
-          {/* Header */}
           <AppHeader />
-          {/* Page Content */}
-          <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
+
+          {/* 👇 AJOUT IMPORTANT ICI */}
+          <Suspense fallback={<div>Chargement...</div>}>
+            <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">
+              {children}
+            </div>
+          </Suspense>
+
         </div>
-        </SessionProvider>
-      </div>
+      </SessionProvider>
+    </div>
   );
 }

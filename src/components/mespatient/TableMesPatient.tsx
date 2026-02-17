@@ -58,7 +58,7 @@ export default function TablePatient() {
           setTotalPages(result.data.totalPages);
         } else {
           setPatients([]);
-          setError(result.message || "Erreur lors du chargement des patients");
+          setError("Erreur lors du chargement des patients");
         }
       } catch (error) {
         console.error("Erreur lors du chargement des patients :", error);

@@ -6,8 +6,19 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { useSession } from "next-auth/react";
 
+interface ExtendedUser {
+  role?: 'ADMIN' | 'USER';
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+}
+
 const Header: React.FC = () => {
-  const { data: session } = useSession();
+  
+    const { data: session } = useSession();
+    const user = session?.user as ExtendedUser | undefined;
+    const role = user?.role;
+
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -76,7 +87,7 @@ const Header: React.FC = () => {
           <div className="flex rounded-lg overflow-hidden shadow border border-[#08A3DC]">
             <button
               className="bg-[#08A3DC]  text-white px-5 py-2 hover:bg-[#0b91c6] transition duration-200"
-              onClick={() => router.push(session?.user ? "/admin/dashboard" : "/signin")}
+              onClick={() => router.push(session?.user ? (role == "ADMIN" ? "/admin/dashboard" : '/admin/dashboard/personal' ): "/signin")}
             >
               {session?.user ? "Dashboard" : "Se connecter"}
             </button>
