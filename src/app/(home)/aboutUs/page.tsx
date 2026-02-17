@@ -3,10 +3,12 @@
 import Header from "@/components/(home)/header/header";
 import React from 'react';
 import { motion } from "framer-motion";
-interface AboutUsProps {
-  theme: "light" | "dark";
-}
-const AboutUs: React.FC<AboutUsProps> = () => {
+
+// interface AboutUsProps {
+//   theme: "light" | "dark";
+// }
+
+const AboutUs = () => {
   
   return (
      
