@@ -28,7 +28,7 @@
     "@types/bcryptjs": "^2.4.6",
     "apexcharts": "^4.3.0",
     "autoprefixer": "^10.4.20",
-    "bcryptjs": "^2.4.3",
+    "bcrypt": "^6.0.0",
     "flatpickr": "^4.6.13",
     "formik": "^2.4.6",
     "framer-motion": "^12.23.6",
@@ -51,6 +51,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@svgr/webpack": "^8.1.0",
+    "@types/bcrypt": "^6.0.0",
     "@types/node": "^20.19.9",
     "@types/react": "^19",
     "@types/react-dom": "^19",

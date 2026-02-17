@@ -1,5 +1,5 @@
 import { object, string } from "zod"
-import bcrypt from "bcryptjs"
+import bcrypt from "bcrypt"
 import prisma from "./db";
  
 export const signInSchema = object({

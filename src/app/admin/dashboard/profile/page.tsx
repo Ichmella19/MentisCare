@@ -13,10 +13,12 @@ export default function ProfilePage() {
     phone: Yup.string().required("Le téléphone est requis"),
     oldPassword: Yup.string().min(6, "Min. 6 caractères"),
     newPassword: Yup.string().min(6, "Min. 6 caractères"),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref("newPassword"), null],
+    confirmPassword: Yup.string()
+    .oneOf(
+      [Yup.ref("newPassword")],
       "Les mots de passe doivent correspondre"
-    ),
+    )
+    .optional(),
   });
 
   return (

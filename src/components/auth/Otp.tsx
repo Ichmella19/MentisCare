@@ -2,11 +2,12 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useRef } from "react";
+import React, { useRef, Suspense } from "react";
 import { toast } from "react-toastify";
-import { sendOtp } from "@/app/(full-width-pages)/(auth)/action"; // Assure-toi que le chemin est correct
+import { sendOtp } from "@/app/(full-width-pages)/(auth)/action";
 
-export default function OTPPage() {
+// ✅ Composant enfant isolé qui utilise useSearchParams
+function OTPContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
@@ -38,7 +39,6 @@ export default function OTPPage() {
     if (response.success) {
       toast.success("Le code a été renvoyé à votre adresse e-mail.");
       router.push(`/reset?email=${encodeURIComponent(email)}`);
-    
     } else {
       toast.error("Erreur lors de l'envoi du code.");
     }
@@ -96,5 +96,18 @@ export default function OTPPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// ✅ Page principale avec Suspense obligatoire
+export default function OTPPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-gray-500">Chargement...</p>
+      </div>
+    }>
+      <OTPContent />
+    </Suspense>
   );
 }
